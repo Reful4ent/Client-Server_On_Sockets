@@ -44,6 +44,7 @@ public class ServerSocket
 
     private string ShowDriversInfo()
     {
+        gdfdf
         DriveInfo[] allDrives = DriveInfo.GetDrives();
         string driversInfo = string.Empty;
         if (allDrives == null || allDrives.Length == 0)
