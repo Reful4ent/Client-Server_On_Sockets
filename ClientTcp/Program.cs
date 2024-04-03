@@ -7,7 +7,8 @@ namespace SocketsApp
     {
         static void Main()
         {
-           
+            ClientSocket clientSocket = new ClientSocket();
+            clientSocket.StartClient("dsad");
         }
     }
 }

@@ -1,3 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using SocketsApp;
 
-Console.WriteLine("Hello, World!");
+ServerSocket socket = new ServerSocket();
+socket.StartServer();
