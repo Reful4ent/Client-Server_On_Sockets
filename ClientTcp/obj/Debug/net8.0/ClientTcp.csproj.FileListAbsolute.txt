@@ -1,0 +1,4 @@
+C:\Users\dima2\RiderProjects\SocketsApp\ClientTcp\obj\Debug\net8.0\ClientTcp.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\dima2\RiderProjects\SocketsApp\ClientTcp\obj\Debug\net8.0\ClientTcp.AssemblyInfoInputs.cache
+C:\Users\dima2\RiderProjects\SocketsApp\ClientTcp\obj\Debug\net8.0\ClientTcp.AssemblyInfo.cs
+C:\Users\dima2\RiderProjects\SocketsApp\ClientTcp\obj\Debug\net8.0\ClientTcp.csproj.CoreCompileInputs.cache
