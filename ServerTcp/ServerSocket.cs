@@ -38,18 +38,47 @@ public class ServerSocket
                 data.Append(Encoding.UTF8.GetString(buffer, 0, size));
             } while (listener.Available>0);
             
-            Console.WriteLine(data.ToString());
-            listener.Send(Encoding.UTF8.GetBytes("Got It"));
+            Console.WriteLine(ServerGetMessage(data));
+            listener.Send(Encoding.UTF8.GetBytes(ResponseRequest(data)));
+            
             if (data.ToString() == "exit")
             {
                 Console.WriteLine($"Клиент с адресом {listener.RemoteEndPoint} отключился {DateTime.Now}");
                 listener.Shutdown(SocketShutdown.Both);
                 listener.Close();
-                
             }
         }
     }
 
+
+    private string ServerGetMessage(StringBuilder data) => $"Сервер получил {DateTime.Now} \n {data.ToString()}";
+
+    private string ResponseRequest(StringBuilder data)
+    {
+        string message = data.ToString();
+        string response = string.Empty;
+        var directory = new DirectoryInfo(message);
+        
+        
+        if (directory.Exists)
+        {
+            DirectoryInfo[] dirs = directory.GetDirectories();
+            FileInfo[] files = directory.GetFiles();
+            
+            foreach (DirectoryInfo item in dirs)
+                response += item.FullName + "\n";
+
+            foreach (FileInfo item in files)
+                response += item.FullName + "\n";
+            
+            return response;
+        }
+        if (message == null || String.IsNullOrEmpty(message))
+            return "Пустое сообщение";
+        return "Goida";
+    }
+    
+    
     private string ShowDriversInfo()
     {
         DriveInfo[] allDrives = DriveInfo.GetDrives();
