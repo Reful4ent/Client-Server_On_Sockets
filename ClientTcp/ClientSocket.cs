@@ -29,6 +29,8 @@ public class ClientSocket
             Console.WriteLine($"Клиент получил {DateTime.Now} {answer.ToString()}");
             
             string message = Console.ReadLine();
+            if (String.IsNullOrEmpty(message))
+                message = " ";
             var data = Encoding.UTF8.GetBytes(message);
             if (message == "exit")
             {

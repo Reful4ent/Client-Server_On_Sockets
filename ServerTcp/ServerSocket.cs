@@ -6,9 +6,20 @@ namespace SocketsApp;
 
 public class ServerSocket
 {
+    
     const string ip = "127.0.0.1";
     const int port = 8080;
     Socket listener = null;
+    
+    // Список текстовых расширений для чтения
+    private readonly List<string> extensions = new List<string>()
+    {
+        ".txt",
+        ".bin",
+        ".html",
+        ".doc",
+        ".rtf",
+    };
     
     public void StartServer()
     {
@@ -49,13 +60,28 @@ public class ServerSocket
             }
         }
     }
-
-
+    
+    /// <summary>
+    /// Создает сообщение о том что и когда передал клиент на сервер
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
     private string ServerGetMessage(StringBuilder data) => $"Сервер получил {DateTime.Now} \n {data.ToString()}";
 
+    
+    /// <summary>
+    /// Создает ответ на запрос клиента
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
     private string ResponseRequest(StringBuilder data)
     {
+        
         string message = data.ToString();
+        
+        if (String.IsNullOrEmpty(message) || String.IsNullOrWhiteSpace(message))
+            return "Пустое сообщение";
+        
         string response = string.Empty;
         var directory = new DirectoryInfo(message);
         
@@ -73,12 +99,14 @@ public class ServerSocket
             
             return response;
         }
-        if (message == null || String.IsNullOrEmpty(message))
-            return "Пустое сообщение";
-        return "Goida";
+        
+        return "Полученноe сообщение не являеется директорией или файлом";
     }
     
-    
+    /// <summary>
+    /// Выводит информацию о имеющихся логических устройствах на ПК
+    /// </summary>
+    /// <returns></returns>
     private string ShowDriversInfo()
     {
         DriveInfo[] allDrives = DriveInfo.GetDrives();
@@ -92,6 +120,4 @@ public class ServerSocket
         
         return driversInfo;
     }
-    
-    
 }
