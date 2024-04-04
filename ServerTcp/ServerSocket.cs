@@ -85,6 +85,14 @@ public class ServerSocket
         string response = string.Empty;
         var directory = new DirectoryInfo(message);
         
+        //Проверка на то что строка имеет данные подстроки, а дальше на существование файла
+        if (extensions.Exists(x=>message.Contains(x)))
+        {
+            if (!File.Exists(message))
+                return "Не является файлом!";
+            return File.ReadAllText(message);
+        }
+
         
         if (directory.Exists)
         {
@@ -120,4 +128,6 @@ public class ServerSocket
         
         return driversInfo;
     }
+
+    
 }
