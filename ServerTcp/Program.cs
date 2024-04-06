@@ -8,3 +8,4 @@ static string GetMessage(string message)
 ServerSocket socket = new ServerSocket();
 socket.ServerMessage += GetMessage;
 socket.StartServer();
+Console.WriteLine("sdadadasd");

@@ -8,69 +8,61 @@ public class ClientSocket
 {
     string ip = string.Empty;
     const int port = 8080;
-    private bool messageIsSend = false;
-    private string clientSend = string.Empty;
     public Func<string, string>? ClientMessage;
+    private IPEndPoint endPoint;
+    private Socket tcpSocketClient;
     
     public async Task StartClient(string ip)
     {
-        await Task.Run(() =>
+        try
         {
-            try
+            this.ip = ip;
+            endPoint = new IPEndPoint(IPAddress.Parse(this.ip), port);
+            tcpSocketClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            tcpSocketClient.Connect(endPoint);
+        }
+        catch (Exception e)
+        {
+            ClientMessage?.Invoke("Неверный адрес сервера!");
+            return;
+        }
+        await Task.Run(async () =>
+        {
+            while (true)
             {
-                this.ip = ip;
-                IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(this.ip), port);
-                Socket tcpSocketClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                tcpSocketClient.Connect(endPoint);
-
-                while (true)
+                byte[] buffer = new byte[256];
+                int size = 0;
+                StringBuilder answer = new StringBuilder();
+                do
                 {
-                    byte[] buffer = new byte[256];
-                    int size = 0;
-                    StringBuilder answer = new StringBuilder();
-                    do
-                    {
-                        size = tcpSocketClient.Receive(buffer);
-                        answer.Append(Encoding.UTF8.GetString(buffer, 0, size));
-                    } while (tcpSocketClient.Available > 0);
+                    size = await tcpSocketClient.ReceiveAsync(buffer);
+                    answer.Append(Encoding.UTF8.GetString(buffer, 0, size));
+                } while (tcpSocketClient.Available > 0);
 
-                    ClientMessage?.Invoke($"Клиент получил {DateTime.Now} {answer.ToString()}");
-
-                    while (messageIsSend != true)
-                    {
-                        
-                    }
-
-                    string message = clientSend;
-
-                    if (String.IsNullOrEmpty(message))
-                        message = " ";
-
-                    var data = Encoding.UTF8.GetBytes(message);
-                    if (message == "exit")
-                    {
-                        tcpSocketClient.Send(Encoding.UTF8.GetBytes("exit"));
-                        tcpSocketClient.Shutdown(SocketShutdown.Both);
-                        tcpSocketClient.Close();
-                        break;
-                    }
-
-                    messageIsSend = false;
-                    tcpSocketClient.Send(data);
-                    Array.Clear(data);
+                if (answer.ToString() == "exit")
+                {
+                    tcpSocketClient.Shutdown(SocketShutdown.Both);
+                    tcpSocketClient.Close();
+                    break;
                 }
-            }
-            catch (Exception e)
-            {
-                ClientMessage?.Invoke("Неверный адрес сервера!");
-                return;
+                ClientMessage?.Invoke($"Клиент получил {DateTime.Now} {answer.ToString()}");
             }
         });
+        return;
     }
 
-    public void Clients(string m)
+    public async Task SendMessageAsync(string message)
     {
-        clientSend = m;
-        messageIsSend = true;
+        await Task.Run(async () =>
+        {
+            if (String.IsNullOrEmpty(message))
+                message = " ";
+
+            var data = Encoding.UTF8.GetBytes(message);
+
+            await tcpSocketClient.SendAsync(data);
+            Array.Clear(data);
+        });
     }
 }
+

@@ -23,7 +23,7 @@ public class ServerSocket
         ".rtf",
     };
     
-    public void StartServer()
+    public async Task StartServer()
     {
         
         IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(ip), port);
@@ -31,36 +31,39 @@ public class ServerSocket
         tcpSocketServer.Bind(endPoint);
         tcpSocketServer.Listen(10);
         ServerMessage?.Invoke($"Сервер включен: {DateTime.Now}");
-        
-        while (true)
-        {
-            if (listener == null || !(listener.Connected))
-            {
-                listener = tcpSocketServer.Accept();
-                ServerMessage?.Invoke($"Клиент присоединился {DateTime.Now} \n c адреса: {listener.RemoteEndPoint}");
-                listener.Send(Encoding.UTF8.GetBytes(ShowDriversInfo()));
-            }
-            
-            byte[] buffer = new byte[256];
-            int size = 0;
-            StringBuilder data = new StringBuilder();
-            
-            do
-            {
-                size = listener.Receive(buffer);
-                data.Append(Encoding.UTF8.GetString(buffer, 0, size));
-            } while (listener.Available>0);
 
-            ServerMessage?.Invoke($"Сервер получил {DateTime.Now} \n {data.ToString()}");
-            listener.Send(Encoding.UTF8.GetBytes(ResponseRequest(data)));
-            
-            if (data.ToString() == "exit")
+        await Task.Run(async () =>
+        {
+            while (true)
             {
-                ServerMessage?.Invoke($"Клиент с адресом {listener.RemoteEndPoint} отключился {DateTime.Now}");
-                listener.Shutdown(SocketShutdown.Both);
-                listener.Close();
+                if (listener == null || !(listener.Connected))
+                {
+                    listener = await tcpSocketServer.AcceptAsync();
+                    ServerMessage?.Invoke($"Клиент присоединился {DateTime.Now} \n c адреса: {listener.RemoteEndPoint}");
+                    await listener.SendAsync(Encoding.UTF8.GetBytes(ShowDriversInfo()));
+                }
+
+                byte[] buffer = new byte[256];
+                int size = 0;
+                StringBuilder data = new StringBuilder();
+
+                do
+                {
+                    size = await listener.ReceiveAsync(buffer);
+                    data.Append(Encoding.UTF8.GetString(buffer, 0, size));
+                } while (listener.Available > 0);
+
+                ServerMessage?.Invoke($"Сервер получил {DateTime.Now} \n {data.ToString()}");
+                await listener.SendAsync(Encoding.UTF8.GetBytes(ResponseRequest(data)));
+
+                if (data.ToString() == "exit")
+                {
+                    ServerMessage?.Invoke($"Клиент с адресом {listener.RemoteEndPoint} отключился {DateTime.Now}");
+                    listener.Shutdown(SocketShutdown.Both);
+                    listener.Close();
+                }
             }
-        }
+        });
     }
     
     /// <summary>
