@@ -8,7 +8,16 @@ namespace SocketsApp
         static void Main()
         {
             ClientSocket clientSocket = new ClientSocket();
-            clientSocket.StartClient("dsad");
+            clientSocket.ClientMessage += GetMessage;
+            clientSocket.StartClient("127.0.0.1");
+            Console.WriteLine("ABOBOBOBOBOBBO");
+            
+        }
+
+        public static string GetMessage(string message)
+        {
+            Console.WriteLine(message);
+            return "";
         }
     }
 }

@@ -10,6 +10,8 @@ public class ServerSocket
     const string ip = "127.0.0.1";
     const int port = 8080;
     Socket listener = null;
+
+    public Func<string, string>? ServerMessage;
     
     // Список текстовых расширений для чтения
     private readonly List<string> extensions = new List<string>()
@@ -28,14 +30,14 @@ public class ServerSocket
         Socket tcpSocketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         tcpSocketServer.Bind(endPoint);
         tcpSocketServer.Listen(10);
-        Console.WriteLine($"Сервер включен: {DateTime.Now}");
+        ServerMessage?.Invoke($"Сервер включен: {DateTime.Now}");
         
         while (true)
         {
             if (listener == null || !(listener.Connected))
             {
                 listener = tcpSocketServer.Accept();
-                Console.WriteLine($"Клиент присоединился {DateTime.Now} \n c адреса: {listener.RemoteEndPoint}");
+                ServerMessage?.Invoke($"Клиент присоединился {DateTime.Now} \n c адреса: {listener.RemoteEndPoint}");
                 listener.Send(Encoding.UTF8.GetBytes(ShowDriversInfo()));
             }
             
@@ -48,26 +50,18 @@ public class ServerSocket
                 size = listener.Receive(buffer);
                 data.Append(Encoding.UTF8.GetString(buffer, 0, size));
             } while (listener.Available>0);
-            
-            Console.WriteLine(ServerGetMessage(data));
+
+            ServerMessage?.Invoke($"Сервер получил {DateTime.Now} \n {data.ToString()}");
             listener.Send(Encoding.UTF8.GetBytes(ResponseRequest(data)));
             
             if (data.ToString() == "exit")
             {
-                Console.WriteLine($"Клиент с адресом {listener.RemoteEndPoint} отключился {DateTime.Now}");
+                ServerMessage?.Invoke($"Клиент с адресом {listener.RemoteEndPoint} отключился {DateTime.Now}");
                 listener.Shutdown(SocketShutdown.Both);
                 listener.Close();
             }
         }
     }
-    
-    /// <summary>
-    /// Создает сообщение о том что и когда передал клиент на сервер
-    /// </summary>
-    /// <param name="data"></param>
-    /// <returns></returns>
-    private string ServerGetMessage(StringBuilder data) => $"Сервер получил {DateTime.Now} \n {data.ToString()}";
-
     
     /// <summary>
     /// Создает ответ на запрос клиента
@@ -92,7 +86,6 @@ public class ServerSocket
                 return "Не является файлом!";
             return File.ReadAllText(message);
         }
-
         
         if (directory.Exists)
         {
@@ -100,16 +93,16 @@ public class ServerSocket
             FileInfo[] files = directory.GetFiles();
             
             foreach (DirectoryInfo item in dirs)
-                response += item.FullName + "\n";
+                response += "\n" + item.FullName;
 
             foreach (FileInfo item in files)
-                response += item.FullName + "\n";
+                response += "\n" + item.FullName;
             
             return response;
         }
-        
         return "Полученноe сообщение не являеется директорией или файлом";
     }
+    
     
     /// <summary>
     /// Выводит информацию о имеющихся логических устройствах на ПК
@@ -128,6 +121,4 @@ public class ServerSocket
         
         return driversInfo;
     }
-
-    
 }
