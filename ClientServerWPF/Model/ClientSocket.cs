@@ -65,7 +65,7 @@ public class ClientSocket
         }
         catch (Exception e)
         {
-            ClientMessage?.Invoke($"Клиент отсутствует");
+            ClientMessage?.Invoke($"Клиент отсутствует или сервер отстутствует");
             return;
         }
     }

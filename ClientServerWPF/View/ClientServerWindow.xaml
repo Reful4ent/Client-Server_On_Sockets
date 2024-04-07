@@ -57,7 +57,11 @@
                 </Grid>
             </Grid>
         </Grid>
-        <TextBlock Grid.Column="1" Text="{Binding ClientText}" TextWrapping="Wrap"></TextBlock>
-        <TextBlock Grid.Column="2" Text="{Binding ServerText}" TextWrapping="Wrap"></TextBlock>
+        <ScrollViewer Grid.Column="1">
+            <TextBlock Text="{Binding ClientText}" TextWrapping="Wrap" ></TextBlock>
+        </ScrollViewer>
+        <ScrollViewer Grid.Column="2">
+            <TextBlock Text="{Binding ServerText}" TextWrapping="Wrap"></TextBlock>
+        </ScrollViewer>
     </Grid>
 </Window>

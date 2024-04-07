@@ -15,7 +15,8 @@ public class ServerSocket
     Socket listener = null;
     private IPEndPoint endPoint;
     private Socket tcpSocketServer;
-
+    public bool flag = true;
+    
     public Func<string, string>? ServerMessage;
     
     // Список текстовых расширений для чтения
@@ -28,6 +29,7 @@ public class ServerSocket
         ".rtf",
     };
     
+    
     public async Task StartServer()
     {
         
@@ -39,7 +41,7 @@ public class ServerSocket
 
         await Task.Run(async () =>
         {
-            while (true)
+            while (flag)
             {
                 if (listener == null || !(listener.Connected))
                 {
@@ -52,22 +54,32 @@ public class ServerSocket
                 int size = 0;
                 StringBuilder data = new StringBuilder();
 
-                do
+
+                try
                 {
-                    size = await listener.ReceiveAsync(buffer);
+                    size = await listener.ReceiveAsync(buffer).WaitAsync(new TimeSpan(15000000));
                     data.Append(Encoding.UTF8.GetString(buffer, 0, size));
-                } while (listener.Available > 0);
-
-                ServerMessage?.Invoke($"Сервер получил {DateTime.Now} \n {data.ToString()}");
-                await listener.SendAsync(Encoding.UTF8.GetBytes(ResponseRequest(data)));
-
+                }
+                catch (Exception e)
+                {
+                    size = 0;
+                }
+                
+                
+                
+                if (size > 0)
+                {
+                    ServerMessage?.Invoke($"Сервер получил {DateTime.Now} \n {data.ToString()}");
+                    await listener.SendAsync(Encoding.UTF8.GetBytes(ResponseRequest(data)));
+                }
+                
+                
                 if (data.ToString() == "exit")
                     DisconnectClient();
                 
-                if (data.ToString() == "ServerExit")
+                if (!flag)
                 {
-                    await CloseServer(data);
-                    break;
+                    await CloseServer(); break;
                 }
             }
         });
@@ -151,21 +163,21 @@ public class ServerSocket
     }
     
     
-    public async Task CloseServer(StringBuilder data)
+    public async Task CloseServer()
     {
         try
         {
             await listener.SendAsync(Encoding.UTF8.GetBytes(ResponseRequest(new StringBuilder("exit"))));
             DisconnectClient();
             ServerMessage?.Invoke($"Сервер отключился {DateTime.Now}");
+            tcpSocketServer.Shutdown(SocketShutdown.Both);
+            tcpSocketServer.Close();
         }
         catch (Exception e)
         {
-            ServerMessage?.Invoke($"Клиент не подключен {DateTime.Now}");
             return;
         }
     }
-
     
     private void DisconnectClient()
     {
@@ -173,5 +185,4 @@ public class ServerSocket
         listener.Shutdown(SocketShutdown.Both);
         listener.Close();
     }
-    
 }

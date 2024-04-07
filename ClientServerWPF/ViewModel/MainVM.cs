@@ -47,6 +47,11 @@ public class MainVM : BaseVM
    public Command StartClientCommand => Command.Create(StartClient);
    public Command EndClientCommand => Command.Create(CloseClient);
    public Command EndServerCommand => Command.Create(CloseServer);
+
+   public Command SendToServerCommand => Command.Create(async () =>
+   {
+      await _clientSocket.SendMessageAsync(@"C:\Users\dima2\Documents\aboba.txt");
+   });
    
    public async void StartClient()
    {
@@ -66,8 +71,11 @@ public class MainVM : BaseVM
 
    public async void CloseServer()
    {
-      await _clientSocket.SendMessageAsync("ServerExit");
+      //await _clientSocket.SendMessageAsync("ServerExit");
+      _serverSocket.flag = false;
    }
+   
+   
 
 
 }
