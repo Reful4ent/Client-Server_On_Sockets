@@ -58,10 +58,7 @@ public class ClientSocket
             if (String.IsNullOrEmpty(message))
                 message = " ";
 
-            var data = Encoding.UTF8.GetBytes(message);
-
-            await tcpSocketClient.SendAsync(data);
-            Array.Clear(data);
+            await tcpSocketClient.SendAsync(Encoding.UTF8.GetBytes(message));
         });
     }
 }

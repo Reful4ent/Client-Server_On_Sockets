@@ -51,18 +51,23 @@ public class ClientSocket
         return;
     }
 
-    public Task SendMessageAsync(string message)
+    public async Task SendMessageAsync(string message)
     {
-        return Task.Run(async () =>
+        try
         {
-            if (String.IsNullOrEmpty(message))
-                message = " ";
+            await Task.Run(async () =>
+            {
+                if (String.IsNullOrEmpty(message))
+                    message = " ";
 
-            var data = Encoding.UTF8.GetBytes(message);
-
-            await tcpSocketClient.SendAsync(data);
-            Array.Clear(data);
-        });
+                await tcpSocketClient.SendAsync(Encoding.UTF8.GetBytes(message));
+            });
+        }
+        catch (Exception e)
+        {
+            ClientMessage?.Invoke($"Клиент отсутствует");
+            return;
+        }
     }
 }
 

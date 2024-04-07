@@ -13,6 +13,8 @@ public class ServerSocket
     const string ip = "127.0.0.1";
     const int port = 8080;
     Socket listener = null;
+    private IPEndPoint endPoint;
+    private Socket tcpSocketServer;
 
     public Func<string, string>? ServerMessage;
     
@@ -29,8 +31,8 @@ public class ServerSocket
     public async Task StartServer()
     {
         
-        IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(ip), port);
-        Socket tcpSocketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        endPoint = new IPEndPoint(IPAddress.Parse(ip), port);
+        tcpSocketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         tcpSocketServer.Bind(endPoint);
         tcpSocketServer.Listen(10);
         ServerMessage?.Invoke($"Сервер включен: {DateTime.Now}");
@@ -60,10 +62,12 @@ public class ServerSocket
                 await listener.SendAsync(Encoding.UTF8.GetBytes(ResponseRequest(data)));
 
                 if (data.ToString() == "exit")
+                    DisconnectClient();
+                
+                if (data.ToString() == "ServerExit")
                 {
-                    ServerMessage?.Invoke($"Клиент с адресом {listener.RemoteEndPoint} отключился {DateTime.Now}");
-                    listener.Shutdown(SocketShutdown.Both);
-                    listener.Close();
+                    await CloseServer(data);
+                    break;
                 }
             }
         });
@@ -78,9 +82,13 @@ public class ServerSocket
     {
         
         string message = data.ToString();
-
+        
+        
         if (message == "exit")
             return "exit";
+
+        if (message == "ServerExit")
+            return "Сервер разорвал соединение";
         
         if (String.IsNullOrEmpty(message) || String.IsNullOrWhiteSpace(message))
             return "Пустое сообщение";
@@ -130,4 +138,40 @@ public class ServerSocket
         
         return driversInfo;
     }
+    
+    public async Task SendMessageAsync(string message)
+    {
+        await Task.Run(async () =>
+        {
+            if (String.IsNullOrEmpty(message))
+                message = " ";
+            StringBuilder data = new StringBuilder(message);
+            await listener.SendAsync(Encoding.UTF8.GetBytes(ResponseRequest(data)));
+        });
+    }
+    
+    
+    public async Task CloseServer(StringBuilder data)
+    {
+        try
+        {
+            await listener.SendAsync(Encoding.UTF8.GetBytes(ResponseRequest(new StringBuilder("exit"))));
+            DisconnectClient();
+            ServerMessage?.Invoke($"Сервер отключился {DateTime.Now}");
+        }
+        catch (Exception e)
+        {
+            ServerMessage?.Invoke($"Клиент не подключен {DateTime.Now}");
+            return;
+        }
+    }
+
+    
+    private void DisconnectClient()
+    {
+        ServerMessage?.Invoke($"Клиент с адресом {listener.RemoteEndPoint} отключился {DateTime.Now}");
+        listener.Shutdown(SocketShutdown.Both);
+        listener.Close();
+    }
+    
 }

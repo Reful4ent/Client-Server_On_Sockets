@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientTcp", "ClientTcp\Clie
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerTcp", "ServerTcp\ServerTcp.csproj", "{F66EBF3F-E64D-4EED-89F7-791FFD7A7782}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp1", "WpfApp1\WpfApp1.csproj", "{11F47010-1339-4FBB-A440-295021598754}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientServerWPF", "ClientServerWPF\ClientServerWPF.csproj", "{11F47010-1339-4FBB-A440-295021598754}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

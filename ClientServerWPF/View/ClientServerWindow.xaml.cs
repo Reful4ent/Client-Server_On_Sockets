@@ -11,4 +11,9 @@ public partial class ClientServerWindow : Window
         InitializeComponent();
         DataContext = new MainVM(serverSocket,clientSocket);
     }
+
+    private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+    {
+        this.Close();
+    }
 }
