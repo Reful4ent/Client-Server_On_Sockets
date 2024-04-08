@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using System;
 using System.IO;
+using System.Printing;
 
 
 namespace SocketsApp;
@@ -15,8 +16,7 @@ public class ServerSocket
     Socket listener = null;
     private IPEndPoint endPoint;
     private Socket tcpSocketServer;
-    public bool flag = true;
-    
+    private bool flag = true;
     public Func<string, string>? ServerMessage;
     
     // Список текстовых расширений для чтения
@@ -45,25 +45,25 @@ public class ServerSocket
             {
                 if (listener == null || !(listener.Connected))
                 {
-                    listener = await tcpSocketServer.AcceptAsync();
-                    ServerMessage?.Invoke($"Клиент присоединился {DateTime.Now} \n c адреса: {listener.RemoteEndPoint}");
-                    await listener.SendAsync(Encoding.UTF8.GetBytes(ShowDriversInfo()));
+                    try
+                    {
+                        listener = await tcpSocketServer.AcceptAsync();
+                        ServerMessage?.Invoke($"Клиент присоединился {DateTime.Now} \n c адреса: {listener.RemoteEndPoint}");
+                        await listener.SendAsync(Encoding.UTF8.GetBytes(ShowDriversInfo()));
+                    }
+                    catch (Exception e)
+                    {
+                        return;
+                    }
                 }
 
                 byte[] buffer = new byte[256];
                 int size = 0;
                 StringBuilder data = new StringBuilder();
 
-
-                try
-                {
-                    size = await listener.ReceiveAsync(buffer).WaitAsync(new TimeSpan(15000000));
-                    data.Append(Encoding.UTF8.GetString(buffer, 0, size));
-                }
-                catch (Exception e)
-                {
-                    size = 0;
-                }
+                
+                size = await listener.ReceiveAsync(buffer);
+                data.Append(Encoding.UTF8.GetString(buffer, 0, size));
                 
                 
                 
@@ -76,11 +76,6 @@ public class ServerSocket
                 
                 if (data.ToString() == "exit")
                     DisconnectClient();
-                
-                if (!flag)
-                {
-                    await CloseServer(); break;
-                }
             }
         });
     }
@@ -184,5 +179,18 @@ public class ServerSocket
         ServerMessage?.Invoke($"Клиент с адресом {listener.RemoteEndPoint} отключился {DateTime.Now}");
         listener.Shutdown(SocketShutdown.Both);
         listener.Close();
+    }
+
+
+    public void Dispose()
+    {
+        flag = false;
+        if (listener !=null && listener.Connected)
+        {
+            listener.Send(Encoding.UTF8.GetBytes(ResponseRequest(new StringBuilder("exit"))));
+            DisconnectClient();
+        }
+        ServerMessage?.Invoke($"Сервер отключился {DateTime.Now}");
+        tcpSocketServer.Dispose();
     }
 }
