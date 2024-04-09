@@ -71,8 +71,7 @@ public class MainVM : BaseVM
 
    public async void CloseServer()
    {
-      //await _clientSocket.SendMessageAsync("ServerExit");
-      _serverSocket.Dispose();
+      await _serverSocket.DisposeServer();
    }
    
    

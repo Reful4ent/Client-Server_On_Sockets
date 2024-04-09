@@ -16,7 +16,7 @@ public class ServerSocket
     Socket listener = null;
     private IPEndPoint endPoint;
     private Socket tcpSocketServer;
-    private bool flag = true;
+    private bool isWork = true;
     public Func<string, string>? ServerMessage;
     
     // Список текстовых расширений для чтения
@@ -41,7 +41,7 @@ public class ServerSocket
 
         await Task.Run(async () =>
         {
-            while (flag)
+            while (isWork)
             {
                 if (listener == null || !(listener.Connected))
                 {
@@ -158,22 +158,6 @@ public class ServerSocket
     }
     
     
-    public async Task CloseServer()
-    {
-        try
-        {
-            await listener.SendAsync(Encoding.UTF8.GetBytes(ResponseRequest(new StringBuilder("exit"))));
-            DisconnectClient();
-            ServerMessage?.Invoke($"Сервер отключился {DateTime.Now}");
-            tcpSocketServer.Shutdown(SocketShutdown.Both);
-            tcpSocketServer.Close();
-        }
-        catch (Exception e)
-        {
-            return;
-        }
-    }
-    
     private void DisconnectClient()
     {
         ServerMessage?.Invoke($"Клиент с адресом {listener.RemoteEndPoint} отключился {DateTime.Now}");
@@ -182,12 +166,13 @@ public class ServerSocket
     }
 
 
-    public void Dispose()
+    public async Task DisposeServer()
     {
-        flag = false;
+        isWork = false;
         if (listener !=null && listener.Connected)
         {
-            listener.Send(Encoding.UTF8.GetBytes(ResponseRequest(new StringBuilder("exit"))));
+            await listener.SendAsync(Encoding.UTF8.GetBytes(ResponseRequest(new StringBuilder("ServerExit"))));
+            await listener.SendAsync(Encoding.UTF8.GetBytes(ResponseRequest(new StringBuilder("exit"))));
             DisconnectClient();
         }
         ServerMessage?.Invoke($"Сервер отключился {DateTime.Now}");

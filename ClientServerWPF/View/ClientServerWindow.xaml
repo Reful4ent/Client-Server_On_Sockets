@@ -9,7 +9,10 @@
         Height="450"
         Width="1200"
         WindowStartupLocation="CenterScreen">
-    <Grid>
+    <Window.Resources>
+        <ResourceDictionary Source="Styles/ClientServerStyles.xaml"></ResourceDictionary>
+    </Window.Resources>
+    <Grid Style="{StaticResource Window_background}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
@@ -33,9 +36,9 @@
                         <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0">IP-адрес</Label>
-                    <TextBox Grid.Column="1" Text="{Binding IpAdress}"></TextBox>
-                    <Button Grid.Column="2" Command="{Binding EndServerCommand}">Сервер отключить</Button>
+                    <Label Grid.Column="0" Style="{StaticResource IP_information_style}">IP-адрес</Label>
+                    <TextBox Grid.Column="1" Text="{Binding IpAdress}" Style="{StaticResource IP_inputField_style}"></TextBox>
+                    <Button Grid.Column="2" Command="{Binding EndServerCommand}" Style="{StaticResource EndServer_style}">Сервер отключить</Button>
                 </Grid>
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
@@ -43,17 +46,17 @@
                         <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0"  Command="{Binding StartClientCommand}">Соединиться</Button>
-                    <Button Grid.Column="1"  Command="{Binding EndClientCommand}">Отключиться</Button>
-                    <Button Grid.Column="2" Click="ButtonBase_OnClick">Выход</Button>
+                    <Button Grid.Column="0"  Command="{Binding StartClientCommand}" Style="{StaticResource Client_connection_style}">Соединиться</Button>
+                    <Button Grid.Column="1"  Command="{Binding EndClientCommand}" Style="{StaticResource Client_connection_style}">Отключиться</Button>
+                    <Button Grid.Column="2" Click="ButtonBase_OnClick" Style="{StaticResource Exit_style}">Выход</Button>
                 </Grid>
                 <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0"  Command="{Binding SendToServerCommand}">Передать серверу</Button>
-                    <Button Grid.Column="1"  Command="{Binding SendToClientCommand}">Передать клиенту</Button>
+                    <Button Grid.Column="0"  Command="{Binding SendToServerCommand}" Style="{StaticResource SendTO_style}">Передать серверу</Button>
+                    <Button Grid.Column="1"  Command="{Binding SendToClientCommand}" Style="{StaticResource SendTO_style}">Передать клиенту</Button>
                 </Grid>
             </Grid>
         </Grid>
