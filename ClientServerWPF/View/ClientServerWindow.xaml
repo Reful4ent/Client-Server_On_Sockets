@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:WpfApp1.View"
         mc:Ignorable="d"
         Title="Программа для обмена данными между компьютерами"
@@ -29,6 +30,23 @@
                     <RowDefinition ></RowDefinition>
                 </Grid.RowDefinitions>
                 <ComboBox Grid.Row="0" SelectedIndex="{Binding IndexDrive}" ItemsSource="{Binding Drives}"></ComboBox>
+                <ListBox Grid.Row="1" ItemsSource="{Binding DirectoryInfo}" SelectedIndex="{Binding IndexPath}">
+                    
+                    <b:Interaction.Triggers>
+                        <b:EventTrigger EventName="MouseDoubleClick">
+                            <b:InvokeCommandAction
+                                Command="{Binding OpenDirectoryCommand}"></b:InvokeCommandAction>
+                        </b:EventTrigger>
+                    </b:Interaction.Triggers>
+                    
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <TextBlock Text="{Binding}"></TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </Grid>
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>

@@ -37,7 +37,7 @@ public class ServerSocket
         tcpSocketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         tcpSocketServer.Bind(endPoint);
         tcpSocketServer.Listen(10);
-        ServerMessage?.Invoke($"Сервер включен: {DateTime.Now}");
+        ServerMessage?.Invoke($"Сервер включен: {DateTime.Now}\n");
 
         await Task.Run(async () =>
         {
@@ -48,7 +48,7 @@ public class ServerSocket
                     try
                     {
                         listener = await tcpSocketServer.AcceptAsync();
-                        ServerMessage?.Invoke($"Клиент присоединился {DateTime.Now} \n c адреса: {listener.RemoteEndPoint}");
+                        ServerMessage?.Invoke($"Клиент присоединился {DateTime.Now} \n c адреса: {listener.RemoteEndPoint}\n");
                         await listener.SendAsync(Encoding.UTF8.GetBytes(ShowDriversInfo()));
                     }
                     catch (Exception e)
@@ -76,7 +76,7 @@ public class ServerSocket
                 
                 if (size > 0)
                 {
-                    ServerMessage?.Invoke($"Сервер получил {DateTime.Now} \n {data.ToString()}");
+                    ServerMessage?.Invoke($"Сервер получил {DateTime.Now} \n {data.ToString()}\n");
                     await listener.SendAsync(Encoding.UTF8.GetBytes(ResponseRequest(data)));
                 }
                 
@@ -86,7 +86,8 @@ public class ServerSocket
             }
         });
     }
-    
+
+    #region Response_Messages
     /// <summary>
     /// Создает ответ на запрос клиента
     /// </summary>
@@ -129,9 +130,9 @@ public class ServerSocket
             foreach (FileInfo item in files)
                 response += "\n" + item.FullName;
             
-            return response;
+            return response + "\n";
         }
-        return "Полученноe сообщение не являеется директорией или файлом";
+        return "Полученноe сообщение не является директорией или файлом";
     }
     
     
@@ -153,6 +154,10 @@ public class ServerSocket
         return driversInfo;
     }
     
+    #endregion
+
+    #region Instruments_for_Server
+
     public async Task SendMessageAsync(string message)
     {
         await Task.Run(async () =>
@@ -185,4 +190,7 @@ public class ServerSocket
         ServerMessage?.Invoke($"Сервер отключился {DateTime.Now}");
         tcpSocketServer.Dispose();
     }
+
+    #endregion
+   
 }
