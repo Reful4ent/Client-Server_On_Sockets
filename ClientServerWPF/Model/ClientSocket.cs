@@ -19,7 +19,7 @@ public class ClientSocket
             this.ip = ip;
             endPoint = new IPEndPoint(IPAddress.Parse(this.ip), port);
             tcpSocketClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            tcpSocketClient.Connect(endPoint);
+            await tcpSocketClient.ConnectAsync(endPoint);
         }
         catch (Exception e)
         {
@@ -33,11 +33,19 @@ public class ClientSocket
                 byte[] buffer = new byte[256];
                 int size = 0;
                 StringBuilder answer = new StringBuilder();
-                do
+
+                try
                 {
-                    size = await tcpSocketClient.ReceiveAsync(buffer);
-                    answer.Append(Encoding.UTF8.GetString(buffer, 0, size));
-                } while (tcpSocketClient.Available > 0);
+                    do
+                    {
+                        size = await tcpSocketClient.ReceiveAsync(buffer);
+                        answer.Append(Encoding.UTF8.GetString(buffer, 0, size));
+                    } while (tcpSocketClient.Available > 0);
+                }
+                catch (Exception e)
+                {
+                    return;
+                }
 
                 if (answer.ToString() == "exit")
                 {
@@ -45,6 +53,7 @@ public class ClientSocket
                     tcpSocketClient.Close();
                     break;
                 }
+                
                 ClientMessage?.Invoke($"Клиент получил {DateTime.Now} {answer.ToString()}");
             }
         });

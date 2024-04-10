@@ -1,5 +1,7 @@
+using System.Data;
 using System.Windows.Input;
 using SocketsApp;
+using System.IO;
 using WpfApp1.ViewModel.Commands;
 
 namespace WpfApp1.ViewModel;
@@ -11,6 +13,11 @@ public class MainVM : BaseVM
    private ClientSocket _clientSocket;
    private string serverText;
    private string clientText;
+   private int indexDrive;
+   private List<string> drives = new();
+   
+   
+   
    
    public MainVM(ServerSocket serverSocket, ClientSocket clientSocket)
    {
@@ -18,11 +25,16 @@ public class MainVM : BaseVM
       _clientSocket = clientSocket;
       _serverSocket.ServerMessage += GetServerText;
       _clientSocket.ClientMessage += GetClientText;
+      drives = ShowDriversInfo();
       StartServer();
    }
 
 
+   #region Bindings_for_Server_Client
 
+   
+
+   
    public string ServerText
    {
       get => serverText;
@@ -73,8 +85,24 @@ public class MainVM : BaseVM
    {
       await _serverSocket.DisposeServer();
    }
-   
-   
+   #endregion
 
+   public int IndexDrive
+   {
+      get => indexDrive;
+      set => Set(ref indexDrive, value);
+   }
 
+   public List<string> Drives
+   {
+      get => drives;
+   }
+   private List<string> ShowDriversInfo()
+   {
+      DriveInfo[] allDrives = DriveInfo.GetDrives();
+      List<string> drives = new();
+      foreach (DriveInfo drive in allDrives)
+         drives.Add(drive.Name);
+      return drives;
+   }
 }

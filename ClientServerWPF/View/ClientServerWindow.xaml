@@ -23,7 +23,13 @@
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0"></Grid>
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20px"></RowDefinition>
+                    <RowDefinition ></RowDefinition>
+                </Grid.RowDefinitions>
+                <ComboBox Grid.Row="0" SelectedIndex="{Binding IndexDrive}" ItemsSource="{Binding Drives}"></ComboBox>
+            </Grid>
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
@@ -60,11 +66,25 @@
                 </Grid>
             </Grid>
         </Grid>
-        <ScrollViewer Grid.Column="1">
-            <TextBlock Text="{Binding ClientText}" TextWrapping="Wrap" ></TextBlock>
-        </ScrollViewer>
-        <ScrollViewer Grid.Column="2">
-            <TextBlock Text="{Binding ServerText}" TextWrapping="Wrap"></TextBlock>
-        </ScrollViewer>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30px"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0">Клиентская сторона</Label>
+            <ScrollViewer Grid.Row="1">
+                <TextBlock Text="{Binding ClientText}" TextWrapping="Wrap" ></TextBlock>
+            </ScrollViewer>
+        </Grid>
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30px"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0">Серверная сторона</Label>
+            <ScrollViewer Grid.Row="1">
+                <TextBlock Text="{Binding ServerText}" TextWrapping="Wrap"></TextBlock>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </Window>

@@ -61,9 +61,16 @@ public class ServerSocket
                 int size = 0;
                 StringBuilder data = new StringBuilder();
 
-                
-                size = await listener.ReceiveAsync(buffer);
-                data.Append(Encoding.UTF8.GetString(buffer, 0, size));
+
+                try
+                {
+                    size = await listener.ReceiveAsync(buffer);
+                    data.Append(Encoding.UTF8.GetString(buffer, 0, size));
+                }
+                catch (Exception e)
+                {
+                    size = -1;
+                }
                 
                 
                 
@@ -161,8 +168,9 @@ public class ServerSocket
     private void DisconnectClient()
     {
         ServerMessage?.Invoke($"Клиент с адресом {listener.RemoteEndPoint} отключился {DateTime.Now}");
-        listener.Shutdown(SocketShutdown.Both);
-        listener.Close();
+        listener.Dispose();
+        //listener.Shutdown(SocketShutdown.Both);
+        //listener.Close();
     }
 
 
@@ -172,7 +180,6 @@ public class ServerSocket
         if (listener !=null && listener.Connected)
         {
             await listener.SendAsync(Encoding.UTF8.GetBytes(ResponseRequest(new StringBuilder("ServerExit"))));
-            await listener.SendAsync(Encoding.UTF8.GetBytes(ResponseRequest(new StringBuilder("exit"))));
             DisconnectClient();
         }
         ServerMessage?.Invoke($"Сервер отключился {DateTime.Now}");

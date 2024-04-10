@@ -3,7 +3,7 @@
     
     
     <Style x:Key="Window_background" TargetType="Grid">
-        <Setter Property="Background" Value="#ece9d8"></Setter>
+       
     </Style>
     
     <Style x:Key="IP_information_style" TargetType="Label">
