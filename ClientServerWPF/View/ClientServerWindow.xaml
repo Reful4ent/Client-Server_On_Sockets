@@ -39,6 +39,7 @@
                         </b:EventTrigger>
                     </b:Interaction.Triggers>
                     
+                    
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid>

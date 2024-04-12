@@ -19,7 +19,8 @@ public class ServerSocket
     private bool isWork = true;
     public Func<string, string>? ServerMessage;
     
-    // Список текстовых расширений для чтения
+    // List of the file extensions.
+    // Список текстовых расширений для чтения.
     private readonly List<string> extensions = new List<string>()
     {
         ".txt",
@@ -29,7 +30,10 @@ public class ServerSocket
         ".rtf",
     };
     
-    
+    /// <summary>
+    /// Start the server.
+    /// Запуск сервера.
+    /// </summary>
     public async Task StartServer()
     {
         
@@ -89,7 +93,8 @@ public class ServerSocket
 
     #region Response_Messages
     /// <summary>
-    /// Создает ответ на запрос клиента
+    /// Creates a response on the client`s request.
+    /// Создает ответ на запрос клиента.
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
@@ -111,14 +116,19 @@ public class ServerSocket
         string response = string.Empty;
         var directory = new DirectoryInfo(message);
         
-        //Проверка на то что строка имеет данные подстроки, а дальше на существование файла
+        //If path contains elements from "extensions", then check the existence of the file.
+        //If the file exists,then read it.
+        //Если путь содержит элементы из списка разрешений,то проверяем файл на существование по указанному пути.
+        //Если файл существует, то считываем его.
         if (extensions.Exists(x=>message.Contains(x)))
         {
             if (!File.Exists(message))
                 return "Не является файлом!";
-            return File.ReadAllText(message);
+            return "\n" + File.ReadAllText(message);
         }
         
+        //If directory exists, then create info about child elements of this directory.
+        //Если директория существует, то создаем информацию о дочерних элементах директории.
         if (directory.Exists)
         {
             DirectoryInfo[] dirs = directory.GetDirectories();
@@ -137,7 +147,8 @@ public class ServerSocket
     
     
     /// <summary>
-    /// Выводит информацию о имеющихся логических устройствах на ПК
+    /// Send the information about available logical drives on the PC.
+    /// Выводит информацию о имеющихся логических устройствах на ПК.
     /// </summary>
     /// <returns></returns>
     private string ShowDriversInfo()
@@ -158,6 +169,12 @@ public class ServerSocket
 
     #region Instruments_for_Server
 
+    
+    /// <summary>
+    /// Send a message to the client.
+    /// Отправляет сообщение для клиента.
+    /// </summary>
+    /// <param name="message"></param>
     public async Task SendMessageAsync(string message)
     {
         await Task.Run(async () =>
@@ -170,15 +187,21 @@ public class ServerSocket
     }
     
     
+    /// <summary>
+    /// Disconnect the client from the server.
+    /// Отключает пользователя от сервера.
+    /// </summary>
     private void DisconnectClient()
     {
         ServerMessage?.Invoke($"Клиент с адресом {listener.RemoteEndPoint} отключился {DateTime.Now}");
         listener.Dispose();
-        //listener.Shutdown(SocketShutdown.Both);
-        //listener.Close();
     }
-
-
+    
+    
+    /// <summary>
+    /// Turn off the server and client if it connected.
+    /// Выключает сервер и клиента, если он подключен.
+    /// </summary>
     public async Task DisposeServer()
     {
         isWork = false;
@@ -190,7 +213,6 @@ public class ServerSocket
         ServerMessage?.Invoke($"Сервер отключился {DateTime.Now}");
         tcpSocketServer.Dispose();
     }
-
     #endregion
    
 }

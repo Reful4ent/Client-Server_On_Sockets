@@ -2,6 +2,7 @@ using System.Data;
 using System.Windows.Input;
 using SocketsApp;
 using System.IO;
+using System.Text;
 using WpfApp1.ViewModel.Commands;
 
 namespace WpfApp1.ViewModel;
@@ -29,7 +30,7 @@ public class MainVM : BaseVM
       _serverSocket.ServerMessage += GetServerText;
       _clientSocket.ClientMessage += GetClientText;
       ShowDriversInfo();
-      ShowDiryctoryInfo(drives[0].ToString());
+      ShowDirectoryInfo(drives[0].ToString());
       StartServer();
    }
 
@@ -64,6 +65,11 @@ public class MainVM : BaseVM
    {
       await _clientSocket.SendMessageAsync(FullPath);
    });
+
+   public Command SendToClientCommand => Command.Create(async () =>
+   {
+      await _serverSocket.SendMessageAsync(fullPath);
+   });
    
    public async void StartClient()
    {
@@ -86,10 +92,16 @@ public class MainVM : BaseVM
       await _serverSocket.DisposeServer();
    }
    #endregion
-
-
+   
+   
+   
+   //ToDo: Сделать обратное возвращение по директории
    #region Bindings_Drives_and_Path
-
+   
+   /// <summary>
+   /// Index of the selected drive in the List of drives.
+   /// Индекс выбранного диска в списке.
+   /// </summary>
    public int IndexDrive
    {
       get => indexDrive;
@@ -97,10 +109,14 @@ public class MainVM : BaseVM
       {
          Set(ref indexDrive, value);
          
-         ShowDiryctoryInfo(drives[IndexDrive].ToString());
+         ShowDirectoryInfo(drives[IndexDrive].ToString());
       }
    }
-
+   
+   /// <summary>
+   /// List of the drives.
+   /// Список дисков.
+   /// </summary>
    public List<string> Drives
    {
       get => drives;
@@ -112,13 +128,21 @@ public class MainVM : BaseVM
       }
    }
    
-
+   
+   /// <summary>
+   /// List of child elements in the directory.
+   /// Список дочерних элементов в директории.
+   /// </summary>
    public List<string> DirectoryInfo
    {
       get => directoryInfo;
       set => Set(ref directoryInfo, value);
    }
-
+   
+   /// <summary>
+   /// Index of the directory path.
+   /// Индекс пути к каталогу.
+   /// </summary>
    public int IndexPath
    {
       get => indexPath;
@@ -129,13 +153,18 @@ public class MainVM : BaseVM
          FullPath = DirectoryInfo[IndexPath].ToString();
       }
    }
-
+   
    public string FullPath
    {
       get => fullPath;
       set => Set(ref fullPath, value);
    }
    
+   /// <summary>
+   /// Send the information about available logical drives on the PC.
+   /// Выводит информацию о имеющихся логических устройствах на ПК.
+   /// </summary>
+   /// <returns></returns>
    private void ShowDriversInfo()
    {
       DriveInfo[] allDrives = DriveInfo.GetDrives();
@@ -144,8 +173,13 @@ public class MainVM : BaseVM
          drives.Add(drive.Name);
       Drives = drives;
    }
-
-   private void ShowDiryctoryInfo(string path)
+   
+   /// <summary>
+   /// If directory exists, then create info about child elements of this directory.
+   /// Если директория существует, то создаем информацию о дочерних элементах директории.
+   /// </summary>
+   /// <param name="path"></param>
+   private void ShowDirectoryInfo(string path)
    {
       List<string> information = new();
       var directory = new DirectoryInfo(path);
@@ -166,7 +200,11 @@ public class MainVM : BaseVM
    }
 
    public Command OpenDirectoryCommand => Command.Create(ChangeDirectory);
-
+   
+   /// <summary>
+   /// Change the directory.
+   /// Меняет директорию, переходя по ней.
+   /// </summary>
    public void ChangeDirectory()
    {
       var directory = new DirectoryInfo(fullPath);

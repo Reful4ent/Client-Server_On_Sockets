@@ -12,6 +12,12 @@ public class ClientSocket
     private IPEndPoint endPoint;
     private Socket tcpSocketClient;
     
+    
+    /// <summary>
+    /// Start the client.
+    /// Запуск клиента.
+    /// </summary>
+    /// <param name="ip"></param>
     public async Task StartClient(string ip)
     {
         try
@@ -59,7 +65,12 @@ public class ClientSocket
         });
         return;
     }
-
+    
+    /// <summary>
+    /// Send a message to the server.
+    /// Отправляет сообщение для сервера.
+    /// </summary>
+    /// <param name="message"></param>
     public async Task SendMessageAsync(string message)
     {
         try
