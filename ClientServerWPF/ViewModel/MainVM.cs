@@ -80,6 +80,7 @@ public class MainVM : BaseVM
    private async void SendToServer()
    {
       await _clientSocket.SendMessageAsync(fullPath);
+      
    }
 
    private async void StartServer()
