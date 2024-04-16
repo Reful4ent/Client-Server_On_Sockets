@@ -29,9 +29,18 @@ public class ClientSocket
         }
         catch (Exception e)
         {
-            ClientMessage?.Invoke("Неверный адрес сервера!");
+            //If the server was turned off.
+            //Если сервер был выключен.
+            if (e.HResult == -2147467259)
+            {
+                ClientMessage?.Invoke("Не удалось получить ответ с удаленного сервера");
+                return;
+            }
+            ClientMessage?.Invoke("Неверный адрес сервера!"); 
             return;
         }
+        
+        
         await Task.Run(async () =>
         {
             while (true)

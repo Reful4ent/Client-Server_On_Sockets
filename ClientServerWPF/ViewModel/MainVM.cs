@@ -19,6 +19,9 @@ public class MainVM : BaseVM
    private List<string> drives = new();
    private List<string> directoryInfo;
    private string fullPath = String.Empty;
+
+   public Action<bool>? IsClientConnected;
+   
    
    
    
@@ -60,36 +63,38 @@ public class MainVM : BaseVM
    public Command StartClientCommand => Command.Create(StartClient);
    public Command EndClientCommand => Command.Create(CloseClient);
    public Command EndServerCommand => Command.Create(CloseServer);
-
-   public Command SendToServerCommand => Command.Create(async () =>
-   {
-      await _clientSocket.SendMessageAsync(FullPath);
-   });
-
-   public Command SendToClientCommand => Command.Create(async () =>
-   {
-      await _serverSocket.SendMessageAsync(fullPath);
-   });
+   public Command SendToServerCommand => Command.Create(SendToServer);
+   public Command SendToClientCommand => Command.Create(SendToClient);
    
-   public async void StartClient()
+   private async void StartClient()
    {
+      
       await _clientSocket.StartClient(IpAdress);
    }
-
-   public async void CloseClient()
+   private async void CloseClient()
    {
       await _clientSocket.SendMessageAsync("exit");
       clientText = string.Empty;
    }
 
-   public async void StartServer()
+   private async void SendToServer()
+   {
+      await _clientSocket.SendMessageAsync(fullPath);
+   }
+
+   private async void StartServer()
    {
       await _serverSocket.StartServer();
    }
 
-   public async void CloseServer()
+   private async void CloseServer()
    {
       await _serverSocket.DisposeServer();
+   }
+
+   private async void SendToClient()
+   {
+      await _serverSocket.SendMessageAsync(fullPath);
    }
    #endregion
    

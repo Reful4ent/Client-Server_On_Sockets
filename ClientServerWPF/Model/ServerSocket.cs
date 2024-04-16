@@ -19,6 +19,10 @@ public class ServerSocket
     private bool isWork = true;
     public Func<string, string>? ServerMessage;
     
+    
+    
+    
+    
     // List of the file extensions.
     // Список текстовых расширений для чтения.
     private readonly List<string> extensions = new List<string>()
@@ -177,13 +181,24 @@ public class ServerSocket
     /// <param name="message"></param>
     public async Task SendMessageAsync(string message)
     {
-        await Task.Run(async () =>
+        try
         {
-            if (String.IsNullOrEmpty(message))
-                message = " ";
-            StringBuilder data = new StringBuilder(message);
-            await listener.SendAsync(Encoding.UTF8.GetBytes(ResponseRequest(data)));
-        });
+            await Task.Run(async () =>
+            {
+                if (String.IsNullOrEmpty(message))
+                    message = " ";
+                StringBuilder data = new StringBuilder(message);
+                await listener.SendAsync(Encoding.UTF8.GetBytes(ResponseRequest(data)));
+            });
+        }
+        catch (Exception e)
+        {
+            if (isWork)
+            {
+                ServerMessage?.Invoke($"Клиент отсутствует"); return;
+            }
+            ServerMessage?.Invoke($"Сервер выключен!");
+        }
     }
     
     
@@ -204,14 +219,17 @@ public class ServerSocket
     /// </summary>
     public async Task DisposeServer()
     {
-        isWork = false;
         if (listener !=null && listener.Connected)
         {
             await listener.SendAsync(Encoding.UTF8.GetBytes(ResponseRequest(new StringBuilder("ServerExit"))));
             DisconnectClient();
         }
-        ServerMessage?.Invoke($"Сервер отключился {DateTime.Now}");
-        tcpSocketServer.Dispose();
+        if (isWork)
+        {
+            isWork = false;
+            ServerMessage?.Invoke($"Сервер отключился {DateTime.Now}");
+            tcpSocketServer.Dispose();
+        }
     }
     #endregion
    
