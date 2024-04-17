@@ -22,6 +22,8 @@ public class ClientSocket
     {
         try
         {
+            if (tcpSocketClient != null && tcpSocketClient.Connected) 
+                return;
             this.ip = ip;
             endPoint = new IPEndPoint(IPAddress.Parse(this.ip), port);
             tcpSocketClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);

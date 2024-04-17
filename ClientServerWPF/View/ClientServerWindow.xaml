@@ -37,6 +37,10 @@
                             <b:InvokeCommandAction
                                 Command="{Binding OpenDirectoryCommand}"></b:InvokeCommandAction>
                         </b:EventTrigger>
+                        <b:EventTrigger EventName="MouseRightButtonUp">
+                            <b:InvokeCommandAction
+                                Command="{Binding PreviousDirectoryCommand}"></b:InvokeCommandAction>
+                        </b:EventTrigger>
                     </b:Interaction.Triggers>
                     
                     
@@ -71,7 +75,7 @@
                         <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0"  Command="{Binding StartClientCommand}" Style="{StaticResource Client_connection_style}">Соединиться</Button>
+                    <Button Grid.Column="0" x:Name="StartClientButton"  Command="{Binding StartClientCommand}" Style="{StaticResource Client_connection_style}">Соединиться</Button>
                     <Button Grid.Column="1"  Command="{Binding EndClientCommand}" Style="{StaticResource Client_connection_style}">Отключиться</Button>
                     <Button Grid.Column="2" Click="ButtonBase_OnClick" Style="{StaticResource Exit_style}">Выход</Button>
                 </Grid>

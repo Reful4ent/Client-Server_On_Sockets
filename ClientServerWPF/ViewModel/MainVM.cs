@@ -20,7 +20,8 @@ public class MainVM : BaseVM
    private List<string> directoryInfo;
    private string fullPath = String.Empty;
 
-   public Action<bool>? IsClientConnected;
+   //private bool isClientConnected = false;
+   //public Action<bool>? IsClientConnectedAction;
    
    
    
@@ -68,7 +69,6 @@ public class MainVM : BaseVM
    
    private async void StartClient()
    {
-      
       await _clientSocket.StartClient(IpAdress);
    }
    private async void CloseClient()
@@ -80,7 +80,6 @@ public class MainVM : BaseVM
    private async void SendToServer()
    {
       await _clientSocket.SendMessageAsync(fullPath);
-      
    }
 
    private async void StartServer()
@@ -229,6 +228,16 @@ public class MainVM : BaseVM
       }
       DirectoryInfo = information;
    }
+   
+   //ToDo: Сделать срез последних элементов строки, кнопка на обратное уже забинжена.
+   public Command PreviousDirectoryCommand => Command.Create(() =>
+   {
+      string[] arr = fullPath.Split();
+      foreach (var VARIABLE in arr)
+      {
+         Console.Write(VARIABLE + " ");
+      }
+   });
 
    #endregion
 
