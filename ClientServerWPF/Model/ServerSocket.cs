@@ -1,9 +1,8 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System;
 using System.IO;
-using System.Printing;
+
 
 
 namespace SocketsApp;

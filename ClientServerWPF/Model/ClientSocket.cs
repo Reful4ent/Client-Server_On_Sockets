@@ -2,18 +2,18 @@
 using System.Net.Sockets;
 using System.Text;
 
+
 namespace SocketsApp;
 
 public class ClientSocket
 {
     string ip = string.Empty;
     const int port = 8080;
-    public Func<string, string>? ClientMessage;
     private IPEndPoint endPoint;
     private Socket tcpSocketClient;
     
     public Action<bool>? IsConnected;
-    
+    public Func<string, string>? ClientMessage;
     
     
     /// <summary>

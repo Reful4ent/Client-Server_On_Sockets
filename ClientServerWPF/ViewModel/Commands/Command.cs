@@ -1,4 +1,3 @@
-using System.Dynamic;
 using System.Windows.Input;
 
 namespace WpfApp1.ViewModel.Commands;

@@ -1,8 +1,5 @@
-using System.Data;
-using System.Windows.Input;
 using SocketsApp;
 using System.IO;
-using System.Text;
 using WpfApp1.ViewModel.Commands;
 
 namespace WpfApp1.ViewModel;
@@ -10,8 +7,8 @@ namespace WpfApp1.ViewModel;
 public class MainVM : BaseVM
 {
    private string ipAdress = string.Empty;
-   private ServerSocket _serverSocket;
-   private ClientSocket _clientSocket;
+   private ServerSocket serverSocket;
+   private ClientSocket clientSocket;
    private string serverText;
    private string clientText;
    private int indexDrive;
@@ -27,13 +24,13 @@ public class MainVM : BaseVM
    
    
    
-   public MainVM(ServerSocket serverSocket, ClientSocket clientSocket)
+   public MainVM(ServerSocket _serverSocket, ClientSocket _clientSocket)
    {
-      _serverSocket = serverSocket;
-      _clientSocket = clientSocket;
-      _serverSocket.ServerMessage += GetServerText;
-      _clientSocket.ClientMessage += GetClientText;
-      _clientSocket.IsConnected += CheckClientConnected;
+      serverSocket = _serverSocket;
+      clientSocket = _clientSocket;
+      serverSocket.ServerMessage += GetServerText;
+      clientSocket.ClientMessage += GetClientText;
+      clientSocket.IsConnected += CheckClientConnected;
       ShowDriversInfo();
       ShowDirectoryInfo(drives[0].ToString());
       StartServer();
@@ -70,34 +67,34 @@ public class MainVM : BaseVM
    
    private async void StartClient()
    {
-      await _clientSocket.StartClient(IpAdress);
+      await clientSocket.StartClient(IpAdress);
    }
    private async void CloseClient()
    {
-      await _clientSocket.SendMessageAsync("exit");
+      await clientSocket.SendMessageAsync("exit");
       IsClientConnectedAction?.Invoke(false);
       clientText = string.Empty;
    }
 
    private async void SendToServer()
    {
-      await _clientSocket.SendMessageAsync(fullPath);
+      await clientSocket.SendMessageAsync(fullPath);
    }
 
    private async void StartServer()
    {
-      await _serverSocket.StartServer();
+      await serverSocket.StartServer();
    }
 
    private async void CloseServer()
    {
-      await _serverSocket.DisposeServer();
+      await serverSocket.DisposeServer();
       IsClientConnectedAction?.Invoke(false);
    }
 
    private async void SendToClient()
    {
-      await _serverSocket.SendMessageAsync(fullPath);
+      await serverSocket.SendMessageAsync(fullPath);
    }
 
    private void CheckClientConnected(bool isConnected)
@@ -242,7 +239,8 @@ public class MainVM : BaseVM
    
    
    /// <summary>
-   /// 
+   /// Returns to the previous directory.
+   /// Возвращается в предыдущюю папкую.
    /// </summary>
    private void ReturnDirectory()
    {
