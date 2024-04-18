@@ -11,10 +11,10 @@ public partial class ClientServerWindow : Window
     {
         InitializeComponent();
         DataContext = new MainVM(serverSocket,clientSocket);
-       /* if (DataContext is MainVM mainVm)
+        if (DataContext is MainVM mainVm)
         {
             mainVm.IsClientConnectedAction += ButtonConnected_State;
-        }*/
+        }
     }
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
@@ -22,7 +22,7 @@ public partial class ClientServerWindow : Window
         this.Close();
     }
 
-    /*(private void ButtonConnected_State(bool isConnected)
+    private void ButtonConnected_State(bool isConnected)
     {
         if (isConnected)
         {
@@ -33,5 +33,5 @@ public partial class ClientServerWindow : Window
         StartClientButton.IsEnabled = true;
         StartClientButton.Foreground = Brushes.Black;
         return;
-    }*/
+    }
 }

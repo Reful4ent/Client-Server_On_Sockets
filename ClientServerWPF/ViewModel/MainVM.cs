@@ -20,8 +20,8 @@ public class MainVM : BaseVM
    private List<string> directoryInfo;
    private string fullPath = String.Empty;
 
-   //private bool isClientConnected = false;
-   //public Action<bool>? IsClientConnectedAction;
+   
+   public Action<bool>? IsClientConnectedAction;
    
    
    
@@ -33,6 +33,7 @@ public class MainVM : BaseVM
       _clientSocket = clientSocket;
       _serverSocket.ServerMessage += GetServerText;
       _clientSocket.ClientMessage += GetClientText;
+      _clientSocket.IsConnected += CheckClientConnected;
       ShowDriversInfo();
       ShowDirectoryInfo(drives[0].ToString());
       StartServer();
@@ -74,6 +75,7 @@ public class MainVM : BaseVM
    private async void CloseClient()
    {
       await _clientSocket.SendMessageAsync("exit");
+      IsClientConnectedAction?.Invoke(false);
       clientText = string.Empty;
    }
 
@@ -90,17 +92,22 @@ public class MainVM : BaseVM
    private async void CloseServer()
    {
       await _serverSocket.DisposeServer();
+      IsClientConnectedAction?.Invoke(false);
    }
 
    private async void SendToClient()
    {
       await _serverSocket.SendMessageAsync(fullPath);
    }
+
+   private void CheckClientConnected(bool isConnected)
+   {
+      IsClientConnectedAction?.Invoke(isConnected);
+   }
    #endregion
    
    
    
-   //ToDo: Сделать обратное возвращение по директории
    #region Bindings_Drives_and_Path
    
    /// <summary>
@@ -154,7 +161,6 @@ public class MainVM : BaseVM
       set
       {
          Set(ref indexPath, value);
-
          FullPath = DirectoryInfo[IndexPath].ToString();
       }
    }
@@ -164,6 +170,9 @@ public class MainVM : BaseVM
       get => fullPath;
       set => Set(ref fullPath, value);
    }
+   
+   public Command OpenDirectoryCommand => Command.Create(ChangeDirectory);
+   public Command PreviousDirectoryCommand => Command.Create(ReturnDirectory);
    
    /// <summary>
    /// Send the information about available logical drives on the PC.
@@ -195,7 +204,8 @@ public class MainVM : BaseVM
          FileInfo[] files = directory.GetFiles();
             
          foreach (DirectoryInfo item in dirs)
-            information.Add(item.FullName);
+            if(Directory.Exists(item.FullName)) 
+               information.Add(item.FullName);
 
          foreach (FileInfo item in files)
             information.Add(item.FullName);
@@ -203,16 +213,15 @@ public class MainVM : BaseVM
       }
       DirectoryInfo = information;
    }
-
-   public Command OpenDirectoryCommand => Command.Create(ChangeDirectory);
+   
    
    /// <summary>
    /// Change the directory.
    /// Меняет директорию, переходя по ней.
    /// </summary>
-   public void ChangeDirectory()
+   private void ChangeDirectory()
    {
-      var directory = new DirectoryInfo(fullPath);
+      var directory = new DirectoryInfo(FullPath);
       List<string> information = new();
       if (directory.Exists)
       {
@@ -220,7 +229,8 @@ public class MainVM : BaseVM
          FileInfo[] files = directory.GetFiles();
             
          foreach (DirectoryInfo item in dirs)
-            information.Add(item.FullName);
+            if(Directory.Exists(item.FullName)) 
+               information.Add(item.FullName);
 
          foreach (FileInfo item in files)
             information.Add(item.FullName);
@@ -229,16 +239,21 @@ public class MainVM : BaseVM
       DirectoryInfo = information;
    }
    
-   //ToDo: Сделать срез последних элементов строки, кнопка на обратное уже забинжена.
-   public Command PreviousDirectoryCommand => Command.Create(() =>
+   
+   
+   /// <summary>
+   /// 
+   /// </summary>
+   private void ReturnDirectory()
    {
-      string[] arr = fullPath.Split();
-      foreach (var VARIABLE in arr)
-      {
-         Console.Write(VARIABLE + " ");
-      }
-   });
-
+      string[] tempPathElements = FullPath.Split("\\").Take(FullPath.Split("\\").Length - 1).ToArray();
+      
+      if (tempPathElements.Length == 1)
+         fullPath = tempPathElements[0]+"\\";
+      else FullPath = String.Join("\\", tempPathElements);
+      
+      ChangeDirectory();
+   }
    #endregion
 
 

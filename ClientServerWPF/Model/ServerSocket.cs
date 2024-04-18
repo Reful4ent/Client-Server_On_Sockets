@@ -17,6 +17,7 @@ public class ServerSocket
     private IPEndPoint endPoint;
     private Socket tcpSocketServer;
     private bool isWork = true;
+    
     public Func<string, string>? ServerMessage;
     
     

@@ -12,6 +12,9 @@ public class ClientSocket
     private IPEndPoint endPoint;
     private Socket tcpSocketClient;
     
+    public Action<bool>? IsConnected;
+    
+    
     
     /// <summary>
     /// Start the client.
@@ -28,6 +31,7 @@ public class ClientSocket
             endPoint = new IPEndPoint(IPAddress.Parse(this.ip), port);
             tcpSocketClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             await tcpSocketClient.ConnectAsync(endPoint);
+            IsConnected?.Invoke(true);
         }
         catch (Exception e)
         {
@@ -36,9 +40,11 @@ public class ClientSocket
             if (e.HResult == -2147467259)
             {
                 ClientMessage?.Invoke("Не удалось получить ответ с удаленного сервера");
+                IsConnected?.Invoke(false);
                 return;
             }
             ClientMessage?.Invoke("Неверный адрес сервера!"); 
+            IsConnected?.Invoke(false);
             return;
         }
         
@@ -101,4 +107,3 @@ public class ClientSocket
         }
     }
 }
-
