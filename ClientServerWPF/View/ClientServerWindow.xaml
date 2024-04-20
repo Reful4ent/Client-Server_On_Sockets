@@ -10,7 +10,8 @@
         Height="450"
         Width="1200"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        Icon="Styles/ImageIcon.png">
     <Window.Resources>
         <ResourceDictionary Source="Styles/ClientServerStyles.xaml"></ResourceDictionary>
     </Window.Resources>
@@ -30,7 +31,7 @@
                     <RowDefinition Height="20px"></RowDefinition>
                     <RowDefinition ></RowDefinition>
                 </Grid.RowDefinitions>
-                <ComboBox Grid.Row="0" x:Name="DrivesComboBox" SelectedIndex="{Binding IndexDrive}" ItemsSource="{Binding Drives}"></ComboBox>
+                <ComboBox Grid.Row="0" x:Name="DrivesComboBox" SelectedIndex="{Binding IndexDrive}" ItemsSource="{Binding Drives}" SelectedItem="{Binding DriveItem}"></ComboBox>
                 <ListBox Grid.Row="1" x:Name="DirectoryInfoComboBox" ItemsSource="{Binding DirectoryInfo}" SelectedIndex="{Binding IndexPath}">
                     
                     <b:Interaction.Triggers>
