@@ -139,6 +139,7 @@ public class MainVM : BaseVM
 
          if (!isFirstDrive)
          {
+            FullPath = drives[IndexDrive];
             currentDrive = drives[IndexDrive];
             isFirstDrive = true;
          }
