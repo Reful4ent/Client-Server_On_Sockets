@@ -18,6 +18,7 @@ public class MainVM : BaseVM
    private ObservableCollection<string> directoryInfo;
 
    private bool isFirstDrive = true;
+   private int prevIndex;
    private string currentDrive = string.Empty;
    private string driveItem = string.Empty; 
    private string fullPath = String.Empty;
@@ -133,18 +134,46 @@ public class MainVM : BaseVM
          Set(ref indexDrive, value);
          if (IndexDrive == -1)
          {
-            IndexDrive = 0;
+            IndexDrive = prevIndex;
+            Console.WriteLine("iNDEX1 " + IndexDrive);
             return;
          }
 
-         if (!isFirstDrive)
+         if (IndexDrive != prevIndex)
          {
-            FullPath = drives[IndexDrive];
-            currentDrive = drives[IndexDrive];
+            int tempIndex = prevIndex;
+            string tempPath = string.Empty;
+            
+            ClearPath(ref fullPath);
+            tempPath = FullPath;
+            
+            prevIndex = IndexDrive;
+            FullPath = Drives[IndexDrive];
+
+            
+            if (DirectoryInfo != null)
+            {
+               DirectoryInfo.Clear();
+               DirectoryInfo = null;
+            }
+            
+            DriveItem = Drives[IndexDrive];
+            currentDrive = Drives[IndexDrive];
+            Drives[tempIndex] = tempPath;
             isFirstDrive = true;
+
          }
       }
    }
+
+   private void ClearPath(ref string thisPath)
+   {
+      string[] tempPathElements = thisPath.Split("\\").Take(1).ToArray();
+      
+      if (tempPathElements.Length == 1)
+         thisPath = tempPathElements[0]+"\\";
+   }
+   
    
    /// <summary>
    /// List of the drives.

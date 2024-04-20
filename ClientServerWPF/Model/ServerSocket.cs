@@ -186,10 +186,10 @@ public class ServerSocket
 
         foreach (DriveInfo drive in allDrives)
         {
-            driversInfo += "\n" + drive.Name + "\n";
+            driversInfo += "\n" + drive.Name;
             drives.Add(drive.Name);
         }
-        return driversInfo + "drives";
+        return driversInfo + "\n" + "drives";
     }
     
     #endregion
