@@ -1,103 +1,47 @@
 using System.Collections.ObjectModel;
-using SocketsApp;
+using ServerWithWpf.Model;
+using ServerWithWpf.ViewModel.Commands;
+using ServerWithWpf.ViewModel;
 using System.IO;
-using WpfApp1.ViewModel.Commands;
+using System.Windows.Documents;
 
-namespace WpfApp1.ViewModel;
+namespace ServerWithWpf.ViewModel;
 
 public class MainVM : BaseVM
 {
-   private string ipAdress = string.Empty;
-   private ServerSocket serverSocket;
-   private ClientSocket clientSocket;
-   private string serverText;
-   private string clientText;
-   private int indexDrive;
-   private int indexPath;
-   private ObservableCollection<string> drives;
-   private ObservableCollection<string> directoryInfo;
-
-   private bool isFirstDrive = true;
-   private int prevIndex;
-   private string currentDrive = string.Empty;
-   private string driveItem = string.Empty; 
-   private string fullPath = String.Empty;
+    private ServerSocket serverSocket;
+    private string serverText;
+    private int indexDrive;
+    private int indexPath;
+    private ObservableCollection<string> drives;
+    private ObservableCollection<string> directoryInfo;
+    private bool isFirstDrive = true;
+    private int prevIndex;
+    private string currentDrive = string.Empty;
+    private string driveItem = string.Empty; 
+    private string fullPath = String.Empty;
    
-   public Action<bool>? IsClientConnectedAction;
-   
-   public MainVM(ServerSocket _serverSocket, ClientSocket _clientSocket)
-   {
-      serverSocket = _serverSocket;
-      clientSocket = _clientSocket;
-      serverSocket.ServerMessage += GetServerText;
-      clientSocket.ClientGetDrives += ShowDriversInfo;
-      clientSocket.СlientGetDirectory += ShowDirectoryInfo;
-      clientSocket.ClientMessage += GetClientText;
-      clientSocket.IsConnected += CheckClientConnected;
-      //StartServer();
-   }
-
-
-   #region Bindings_for_Server_Client
+    public Action<bool>? IsClientConnectedAction;
+    
+    public MainVM(ServerSocket _serverSocket)
+    {
+        serverSocket = _serverSocket;
+        serverSocket.ServerMessage += GetServerText;
+        StartServer();
+        ShowDriversInfo();
+    }
+    
+   #region Bindings_for_Server-Work
    public string ServerText
    {
       get => serverText;
       set => Set(ref serverText, serverText+"\n"+value);
    }
-   public string ClientText
-   {
-      get => clientText;
-      set
-      {
-         if (value == string.Empty)
-         {
-            Set(ref clientText, "");
-            return;
-         }
-         Set(ref clientText, clientText + "\n" + value);
-      }
-   }
-   public string IpAdress
-   {
-      get => ipAdress;
-      set => Set(ref ipAdress, value);
-   }
-   
    private string GetServerText(string message) => ServerText = message;
-   private string GetClientText(string message) => ClientText = message;
-
-   public Command StartClientCommand => Command.Create(StartClient);
-   public Command EndClientCommand => Command.Create(CloseClient);
+   
    public Command EndServerCommand => Command.Create(CloseServer);
-   public Command SendToServerCommand => Command.Create(SendToServer);
    public Command SendToClientCommand => Command.Create(SendToClient);
    
-   private async void StartClient()
-   {
-      await clientSocket.StartClient(IpAdress);
-   }
-   private async void CloseClient()
-   {
-      await clientSocket.SendMessageAsync("exit");
-      Drives.Clear();
-      if (DirectoryInfo != null)
-      {
-         DirectoryInfo.Clear();
-         DirectoryInfo = null;
-      }
-      IsClientConnectedAction?.Invoke(false);
-      ClientText = String.Empty;
-   }
-
-   private async void SendToServer()
-   {
-      if(DirectoryInfo != null)
-         FullPath = DirectoryInfo[IndexPath];
-      
-      Drives[IndexDrive] = FullPath;
-      DriveItem = Drives[IndexDrive];
-      await clientSocket.SendMessageAsync(FullPath);
-    }
 
    private async void StartServer()
    {
@@ -110,34 +54,31 @@ public class MainVM : BaseVM
    }
    private async void SendToClient()
    {
-      await serverSocket.SendMessageAsync(FullPath);
+      await serverSocket.SendMessageAsync(fullPath);
    }
-   private void CheckClientConnected(bool isConnected)
-   {
-      IsClientConnectedAction?.Invoke(isConnected);
-   }
+
    #endregion
+
+   #region Bindings_for_Migrations
+   public string DriveItem
+   {
+      get => driveItem;
+      set => Set(ref driveItem, value);
+   }
    
-   
-   
-   #region Bindings_Drives_and_Path
-   
-   /// <summary>
-   /// Index of the selected drive in the List of drives.
-   /// Индекс выбранного диска в списке.
-   /// </summary>
    public int IndexDrive
    {
       get => indexDrive;
       set
       {
          Set(ref indexDrive, value);
+
          if (IndexDrive == -1)
          {
             IndexDrive = prevIndex;
             return;
          }
-
+         
          if (IndexDrive != prevIndex)
          {
             int tempIndex = prevIndex;
@@ -159,12 +100,11 @@ public class MainVM : BaseVM
             DriveItem = Drives[IndexDrive];
             currentDrive = Drives[IndexDrive];
             Drives[tempIndex] = tempPath;
+            ShowDirectoryInfo(Drives[IndexDrive]);
             isFirstDrive = true;
-
          }
       }
    }
-
    private void ClearPath(ref string thisPath)
    {
       string[] tempPathElements = thisPath.Split("\\").Take(1).ToArray();
@@ -172,7 +112,6 @@ public class MainVM : BaseVM
       if (tempPathElements.Length == 1)
          thisPath = tempPathElements[0]+"\\";
    }
-   
    
    /// <summary>
    /// List of the drives.
@@ -189,12 +128,6 @@ public class MainVM : BaseVM
             currentDrive = Drives[IndexDrive];
          isFirstDrive = false;
       }
-   }
-
-   public string DriveItem
-   {
-      get => driveItem;
-      set => Set(ref driveItem, value);
    }
    
    /// <summary>
@@ -214,7 +147,11 @@ public class MainVM : BaseVM
    public int IndexPath
    {
       get => indexPath;
-      set => Set(ref indexPath, value);
+      set
+      {
+         Set(ref indexPath, value);
+         fullPath = DirectoryInfo[IndexPath];
+      }
    }
    
    public string FullPath
@@ -249,9 +186,14 @@ public class MainVM : BaseVM
    /// Выводит информацию о имеющихся логических устройствах на ПК.
    /// </summary>
    /// <returns></returns>
-   private void ShowDriversInfo(List<string> drivesFromServer)
+   private void ShowDriversInfo()
    {
-      Drives = new ObservableCollection<string>(drivesFromServer);
+      DriveInfo[] allDrives = DriveInfo.GetDrives();
+      List<string> drives = new();
+      foreach (DriveInfo drive in allDrives)
+         drives.Add(drive.Name);
+      Drives = new ObservableCollection<string>(drives);
+      ShowDirectoryInfo(Drives[0]);
    }
    
    /// <summary>
@@ -259,12 +201,25 @@ public class MainVM : BaseVM
    /// Если директория существует, то создаем информацию о дочерних элементах директории.
    /// </summary>
    /// <param name="path"></param>
-   
-   private void ShowDirectoryInfo(List<string> information)
+   private void ShowDirectoryInfo(string path)
    {
+      List<string> information = new();
+      var directory = new DirectoryInfo(path);
+      if (directory.Exists)
+      {
+         DirectoryInfo[] dirs = directory.GetDirectories();
+         FileInfo[] files = directory.GetFiles();
+            
+         foreach (DirectoryInfo item in dirs)
+            if(Directory.Exists(item.FullName)) 
+               information.Add(item.FullName);
+
+         foreach (FileInfo item in files)
+            information.Add(item.FullName);
+         
+      }
       DirectoryInfo = new ObservableCollection<string>(information);
    }
-   
    
    /// <summary>
    /// Change the directory.
@@ -272,16 +227,36 @@ public class MainVM : BaseVM
    /// </summary>
    private void ChangeDirectory()
    {
-      SendToServer();
+      if (DirectoryInfo != null)
+      {
+         if(indexPath != -1)
+            FullPath = DirectoryInfo[IndexPath];
+      }
+      
+      var directory = new DirectoryInfo(FullPath);
+      List<string> information = new();
+      if (directory.Exists)
+      {
+         DirectoryInfo[] dirs = directory.GetDirectories();
+         FileInfo[] files = directory.GetFiles();
+            
+         foreach (DirectoryInfo item in dirs)
+            if(Directory.Exists(item.FullName)) 
+               information.Add(item.FullName);
+
+         foreach (FileInfo item in files)
+            information.Add(item.FullName);
+         
+      }
+      DirectoryInfo = new ObservableCollection<string>(information);
    }
-   
    
    
    /// <summary>
    /// Returns to the previous directory.
    /// Возвращается в предыдущюю папкую.
    /// </summary>
-   private async void ReturnDirectory()
+   private void ReturnDirectory()
    {
       string[] tempPathElements = FullPath.Split("\\").Take(FullPath.Split("\\").Length - 1).ToArray();
       
@@ -290,9 +265,9 @@ public class MainVM : BaseVM
       else FullPath = String.Join("\\", tempPathElements);
       Drives[IndexDrive] = FullPath;
       DriveItem = Drives[IndexDrive];
-      await clientSocket.SendMessageAsync(FullPath);
+      ShowDirectoryInfo(FullPath);
    }
+   
+
    #endregion
-
-
 }
