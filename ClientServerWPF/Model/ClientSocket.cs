@@ -71,7 +71,11 @@ public class ClientSocket
                         answer.Append(Encoding.UTF8.GetString(buffer, 0, size));
                     } while (tcpSocketClient.Available > 0);
                     
-                    string[] tempPathElements = answer.ToString().Split("\n").Take(answer.ToString().Split("\n").Length).ToArray();
+                    string[] tempPathElements = answer
+                        .ToString()
+                        .Split("\n")
+                        .Take(answer.ToString().Split("\n").Length)
+                        .ToArray();
                     
 
                     switch (tempPathElements[tempPathElements.Length - 1])
@@ -80,15 +84,37 @@ public class ClientSocket
                             drives = new List<string>();
                             for (int i = 1; i < tempPathElements.Length-1; i++)
                                 drives.Add(tempPathElements[i]);
-                            tempPathElements = answer.ToString().Split("\n").Take(answer.ToString().Split("\n").Length-1).ToArray();
+                            
+                            tempPathElements = answer
+                                .ToString()
+                                .Split("\n")
+                                .Take(answer.ToString().Split("\n").Length-1)
+                                .ToArray();
+                            
                             answer = new StringBuilder(String.Join("\n",tempPathElements)+"\n");
                             ClientGetDrives?.Invoke(drives);
                             break;
+                        
                         case "directories":
                             directories = new List<string>();
                             for (int i = 1; i < tempPathElements.Length-1; i++)
                                 directories.Add(tempPathElements[i]);
-                            tempPathElements = answer.ToString().Split("\n").Take(answer.ToString().Split("\n").Length-1).ToArray();
+                            
+                            tempPathElements = answer
+                                .ToString()
+                                .Split("\n")
+                                .Take(answer.ToString().Split("\n").Length-1)
+                                .ToArray();
+                            
+                            if (tempPathElements[1] == ".")
+                            {
+                                tempPathElements = tempPathElements
+                                    .Reverse()
+                                    .Take(tempPathElements.Length - 3)
+                                    .Append("\n")
+                                    .Reverse()
+                                    .ToArray();
+                            }
                             answer = new StringBuilder(String.Join("\n",tempPathElements)+"\n");
                             СlientGetDirectory?.Invoke(directories);
                             break;
