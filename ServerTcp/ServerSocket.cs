@@ -25,7 +25,7 @@ public class ServerSocket
     
     public async Task StartServer()
     {
-        
+        MultipartFormDataContent;
         IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(ip), port);
         Socket tcpSocketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         tcpSocketServer.Bind(endPoint);
