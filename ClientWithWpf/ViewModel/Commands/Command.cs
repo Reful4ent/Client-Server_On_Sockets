@@ -1,10 +1,7 @@
 using System.Windows.Input;
 
-<<<<<<<< HEAD:ServerWithWpf/ViewModel/Commands/Command.cs
-namespace ServerWithWpf.ViewModel.Commands;
-========
+
 namespace ClientWithWpf.ViewModel.Commands;
->>>>>>>> ClientWpf:ClientWithWpf/ViewModel/Commands/Command.cs
 
 public class Command : ICommand
 {

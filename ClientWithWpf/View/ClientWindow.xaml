@@ -7,6 +7,7 @@
         xmlns:local="clr-namespace:ClientWithWpf.View"
         mc:Ignorable="d"
         Title="ClientWindow" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen"
         Icon="/View/Styles/imageicon.png">
     <Window.Resources>
         <ResourceDictionary Source="Styles/ClientServerStyles.xaml"></ResourceDictionary>

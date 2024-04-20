@@ -1,11 +1,9 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-<<<<<<<< HEAD:ServerWithWpf/ViewModel/BaseVM.cs
+
 namespace ServerWithWpf.ViewModel;
-========
-namespace ClientWithWpf.ViewModel;
->>>>>>>> ClientWpf:ClientWithWpf/ViewModel/BaseVM.cs
+
 
 public class BaseVM : INotifyPropertyChanged
 {

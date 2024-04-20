@@ -1,7 +1,6 @@
-using ClientWithWpf.ViewModel.Commands;
-using ClientWithWpf.Model;
+
 using System.Collections.ObjectModel;
-<<<<<<<< HEAD:ServerWithWpf/ViewModel/MainVM.cs
+
 using ServerWithWpf.Model;
 using ServerWithWpf.ViewModel.Commands;
 using ServerWithWpf.ViewModel;
@@ -58,102 +57,6 @@ public class MainVM : BaseVM
    private async void SendToClient()
    {
       await serverSocket.SendMessageAsync(fullPath);
-========
-namespace ClientWithWpf.ViewModel;
-
-public class MainVM : BaseVM
-{
-    private string ipAdress = string.Empty;
-   private ClientSocket clientSocket;
-   private string clientText;
-   private int indexDrive;
-   private int indexPath;
-   private ObservableCollection<string> drives;
-   private ObservableCollection<string> directoryInfo;
-
-   private bool isFirstDrive = true;
-   private int prevIndex;
-   private string currentDrive = string.Empty;
-   private string driveItem = string.Empty; 
-   private string fullPath = String.Empty;
-   
-   public Action<bool>? IsClientConnectedAction;
-   
-   public MainVM(ClientSocket _clientSocket)
-   {
-      clientSocket = _clientSocket;
-      clientSocket.ClientGetDrives += ShowDriversInfo;
-      clientSocket.СlientGetDirectory += ShowDirectoryInfo;
-      clientSocket.ClientMessage += GetClientText;
-      clientSocket.IsConnected += CheckClientConnected;
-   }
-
-
-   #region Bindings_for_Server_Client
-  
-   public string ClientText
-   {
-      get => clientText;
-      set
-      {
-         if (value == string.Empty)
-         {
-            Set(ref clientText, "");
-            return;
-         }
-         Set(ref clientText, clientText + "\n" + value);
-      }
-   }
-   public string IpAdress
-   {
-      get => ipAdress;
-      set => Set(ref ipAdress, value);
-   }
-   
-   private string GetClientText(string message) => ClientText = message;
-
-   public Command StartClientCommand => Command.Create(StartClient);
-   public Command EndClientCommand => Command.Create(CloseClient);
-   public Command SendToServerCommand => Command.Create(SendToServer);
-   
-   private async void StartClient()
-   {
-      await clientSocket.StartClient(IpAdress);
-   }
-   private async void CloseClient()
-   {
-      await clientSocket.SendMessageAsync("exit");
-      
-      if (Drives != null)
-         Drives.Clear();
-      
-      if (DirectoryInfo != null)
-      {
-         DirectoryInfo.Clear();
-         DirectoryInfo = null;
-      }
-      
-      IsClientConnectedAction?.Invoke(false);
-      ClientText = String.Empty;
-   }
-
-   private async void SendToServer()
-   {
-      if(DirectoryInfo != null)
-         FullPath = DirectoryInfo[IndexPath];
-
-      if (Drives != null)
-      {
-         Drives[IndexDrive] = FullPath;
-         DriveItem = Drives[IndexDrive];
-      }
-      await clientSocket.SendMessageAsync(FullPath);
-    }
-   
-   private void CheckClientConnected(bool isConnected)
-   {
-      IsClientConnectedAction?.Invoke(isConnected);
->>>>>>>> ClientWpf:ClientWithWpf/ViewModel/MainVM.cs
    }
 
    #endregion

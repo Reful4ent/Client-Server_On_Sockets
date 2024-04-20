@@ -18,16 +18,13 @@ Global
 		{11F47010-1339-4FBB-A440-295021598754}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11F47010-1339-4FBB-A440-295021598754}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11F47010-1339-4FBB-A440-295021598754}.Release|Any CPU.Build.0 = Release|Any CPU
-<<<<<<< HEAD
 		{740BC37E-3E6C-4CA9-82B0-4139D34BD4B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{740BC37E-3E6C-4CA9-82B0-4139D34BD4B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{740BC37E-3E6C-4CA9-82B0-4139D34BD4B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{740BC37E-3E6C-4CA9-82B0-4139D34BD4B1}.Release|Any CPU.Build.0 = Release|Any CPU
-=======
 		{59C5E162-C8FC-453C-AC28-0731E11FC703}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{59C5E162-C8FC-453C-AC28-0731E11FC703}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59C5E162-C8FC-453C-AC28-0731E11FC703}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59C5E162-C8FC-453C-AC28-0731E11FC703}.Release|Any CPU.Build.0 = Release|Any CPU
->>>>>>> ClientWpf
 	EndGlobalSection
 EndGlobal
