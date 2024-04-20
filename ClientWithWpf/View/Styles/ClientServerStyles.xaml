@@ -8,12 +8,12 @@
     
     <Style x:Key="IP_information_style" TargetType="Label">
         <Setter Property="VerticalAlignment" Value="Center"></Setter>
-        <Setter Property="Padding" Value="20 0 0 0 "></Setter>
+        <Setter Property="HorizontalAlignment" Value="Center"></Setter>
     </Style>
     
     <Style x:Key="IP_inputField_style" TargetType="TextBox">
         <Setter Property="Height" Value="20px"></Setter>
-        <Setter Property="Width" Value="100px"></Setter>
+        <Setter Property="Width" Value="120px"></Setter>
     </Style>
     
     <Style x:Key="EndServer_style" TargetType="Button">

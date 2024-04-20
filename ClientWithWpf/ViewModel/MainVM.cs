@@ -1,16 +1,12 @@
+using ClientWithWpf.ViewModel.Commands;
+using ClientWithWpf.Model;
 using System.Collections.ObjectModel;
-using SocketsApp;
-using System.IO;
-using WpfApp1.ViewModel.Commands;
-
-namespace WpfApp1.ViewModel;
+namespace ClientWithWpf.ViewModel;
 
 public class MainVM : BaseVM
 {
-   private string ipAdress = string.Empty;
-   private ServerSocket serverSocket;
+    private string ipAdress = string.Empty;
    private ClientSocket clientSocket;
-   private string serverText;
    private string clientText;
    private int indexDrive;
    private int indexPath;
@@ -25,25 +21,18 @@ public class MainVM : BaseVM
    
    public Action<bool>? IsClientConnectedAction;
    
-   public MainVM(ServerSocket _serverSocket, ClientSocket _clientSocket)
+   public MainVM(ClientSocket _clientSocket)
    {
-      serverSocket = _serverSocket;
       clientSocket = _clientSocket;
-      serverSocket.ServerMessage += GetServerText;
       clientSocket.ClientGetDrives += ShowDriversInfo;
       clientSocket.СlientGetDirectory += ShowDirectoryInfo;
       clientSocket.ClientMessage += GetClientText;
       clientSocket.IsConnected += CheckClientConnected;
-      StartServer();
    }
 
 
    #region Bindings_for_Server_Client
-   public string ServerText
-   {
-      get => serverText;
-      set => Set(ref serverText, serverText+"\n"+value);
-   }
+  
    public string ClientText
    {
       get => clientText;
@@ -63,14 +52,11 @@ public class MainVM : BaseVM
       set => Set(ref ipAdress, value);
    }
    
-   private string GetServerText(string message) => ServerText = message;
    private string GetClientText(string message) => ClientText = message;
 
    public Command StartClientCommand => Command.Create(StartClient);
    public Command EndClientCommand => Command.Create(CloseClient);
-   public Command EndServerCommand => Command.Create(CloseServer);
    public Command SendToServerCommand => Command.Create(SendToServer);
-   public Command SendToClientCommand => Command.Create(SendToClient);
    
    private async void StartClient()
    {
@@ -79,12 +65,16 @@ public class MainVM : BaseVM
    private async void CloseClient()
    {
       await clientSocket.SendMessageAsync("exit");
-      Drives.Clear();
+      
+      if (Drives != null)
+         Drives.Clear();
+      
       if (DirectoryInfo != null)
       {
          DirectoryInfo.Clear();
          DirectoryInfo = null;
       }
+      
       IsClientConnectedAction?.Invoke(false);
       ClientText = String.Empty;
    }
@@ -93,25 +83,15 @@ public class MainVM : BaseVM
    {
       if(DirectoryInfo != null)
          FullPath = DirectoryInfo[IndexPath];
-      
-      Drives[IndexDrive] = FullPath;
-      DriveItem = Drives[IndexDrive];
+
+      if (Drives != null)
+      {
+         Drives[IndexDrive] = FullPath;
+         DriveItem = Drives[IndexDrive];
+      }
       await clientSocket.SendMessageAsync(FullPath);
     }
-
-   private async void StartServer()
-   {
-      await serverSocket.StartServer();
-   }
-   private async void CloseServer()
-   {
-      await serverSocket.DisposeServer();
-      IsClientConnectedAction?.Invoke(false);
-   }
-   private async void SendToClient()
-   {
-      await serverSocket.SendMessageAsync(FullPath);
-   }
+   
    private void CheckClientConnected(bool isConnected)
    {
       IsClientConnectedAction?.Invoke(isConnected);

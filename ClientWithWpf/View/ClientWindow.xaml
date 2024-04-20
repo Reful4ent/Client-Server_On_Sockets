@@ -1,30 +1,25 @@
-<Window x:Class="WpfApp1.View.ClientServerWindow"
+<Window x:Class="ClientWithWpf.View.ClientWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-        xmlns:local="clr-namespace:WpfApp1.View"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:ClientWithWpf.View"
         mc:Ignorable="d"
-        Title="Программа для обмена данными между компьютерами"
-        Height="450"
-        Width="1200"
-        WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize"
-        Icon="Styles/ImageIcon.png">
+        Title="ClientWindow" Height="450" Width="800"
+        Icon="/View/Styles/imageicon.png">
     <Window.Resources>
         <ResourceDictionary Source="Styles/ClientServerStyles.xaml"></ResourceDictionary>
     </Window.Resources>
-    <Grid Style="{StaticResource Window_background}">
+    <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
+                <RowDefinition Height="120"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
                 <Grid.RowDefinitions>
@@ -65,29 +60,20 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0" Style="{StaticResource IP_information_style}">IP-адрес</Label>
                     <TextBox Grid.Column="1" Text="{Binding IpAdress}" Style="{StaticResource IP_inputField_style}"></TextBox>
-                    <Button Grid.Column="2" Command="{Binding EndServerCommand}" Style="{StaticResource EndServer_style}">Сервер отключить</Button>
                 </Grid>
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" x:Name="StartClientButton"  Command="{Binding StartClientCommand}" Style="{StaticResource Client_connection_style}">Соединиться</Button>
-                    <Button Grid.Column="1"  Command="{Binding EndClientCommand}" Style="{StaticResource Client_connection_style}">Отключиться</Button>
-                    <Button Grid.Column="2" Click="ButtonBase_OnClick" Style="{StaticResource Exit_style}">Выход</Button>
+                    <Button Grid.Column="0" x:Name="StartClientButton"  Command="{Binding StartClientCommand}">Соединиться</Button>
+                    <Button Grid.Column="1"  Command="{Binding EndClientCommand}" >Отключиться</Button>
                 </Grid>
                 <Grid Grid.Row="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0"  Command="{Binding SendToServerCommand}" Style="{StaticResource SendTO_style}">Передать серверу</Button>
-                    <Button Grid.Column="1"  Command="{Binding SendToClientCommand}" Style="{StaticResource SendTO_style}">Передать клиенту</Button>
+                    <Button Command="{Binding SendToServerCommand}" >Передать серверу</Button>
                 </Grid>
             </Grid>
         </Grid>
@@ -99,16 +85,6 @@
             <Label Grid.Row="0">Клиентская сторона</Label>
             <ScrollViewer Grid.Row="1">
                 <TextBlock x:Name="ClientWindowText" Text="{Binding ClientText}" TextWrapping="Wrap" ></TextBlock>
-            </ScrollViewer>
-        </Grid>
-        <Grid Grid.Column="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30px"></RowDefinition>
-                <RowDefinition></RowDefinition>
-            </Grid.RowDefinitions>
-            <Label Grid.Row="0">Серверная сторона</Label>
-            <ScrollViewer Grid.Row="1">
-                <TextBlock Text="{Binding ServerText}" TextWrapping="Wrap"></TextBlock>
             </ScrollViewer>
         </Grid>
     </Grid>

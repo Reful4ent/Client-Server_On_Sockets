@@ -4,7 +4,7 @@ using System.Text;
 using System.Windows.Documents;
 
 
-namespace SocketsApp;
+namespace ClientWithWpf.Model;
 
 public class ClientSocket
 {

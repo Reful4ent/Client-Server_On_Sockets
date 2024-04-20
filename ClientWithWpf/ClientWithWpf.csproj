@@ -6,11 +6,14 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UseWPF>true</UseWPF>
-        <RootNamespace>WpfApp1</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-      <None Remove="View\Styles\ImageIcon.png" />
+      <None Remove="View\Styles\imageicon.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Model\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -18,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Resource Include="View\Styles\ImageIcon.png" />
+      <Resource Include="View\Styles\imageicon.png" />
     </ItemGroup>
 
 </Project>

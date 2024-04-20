@@ -1,28 +1,27 @@
-﻿using System.Windows;
-using SocketsApp;
-using WpfApp1.View;
+﻿using System.Configuration;
+using System.Data;
+using System.Windows;
+using ClientWithWpf.Model;
+using ClientWithWpf.View;
 
-namespace WpfApp1;
+namespace ClientWithWpf;
 
 /// <summary>
 /// Interaction logic for App.xaml
 /// </summary>
 public partial class App : Application
 {
-    private ServerSocket _serverSocket;
     private ClientSocket _clientSocket;
 
     public App() : base()
     {
-        _serverSocket = new ServerSocket();
         _clientSocket = new ClientSocket();
     }
     
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
-        ClientServerWindow clientServerWindow = new ClientServerWindow(_serverSocket, _clientSocket);
+        ClientWindow clientServerWindow = new ClientWindow( _clientSocket);
         clientServerWindow.Show();
     }
 }
-

@@ -1,28 +1,23 @@
 using System.Windows;
-using System.Windows.Controls;
+using ClientWithWpf.Model;
+using ClientWithWpf.ViewModel;
 using System.Windows.Media;
-using SocketsApp;
-using WpfApp1.ViewModel;
 
-namespace WpfApp1.View;
+namespace ClientWithWpf.View;
 
-public partial class ClientServerWindow : Window
+public partial class ClientWindow : Window
 {
-    public ClientServerWindow(ServerSocket serverSocket,ClientSocket clientSocket)
+    public ClientWindow(ClientSocket clientSocket)
     {
         InitializeComponent();
-        DataContext = new MainVM(serverSocket,clientSocket);
+        DataContext = new MainVM(clientSocket);
         if (DataContext is MainVM mainVm)
         {
             mainVm.IsClientConnectedAction += ButtonConnected_State;
         }
+        
     }
-
-    private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
-    {
-        this.Close();
-    }
-
+    
     private void ButtonConnected_State(bool isConnected)
     {
         if (isConnected)

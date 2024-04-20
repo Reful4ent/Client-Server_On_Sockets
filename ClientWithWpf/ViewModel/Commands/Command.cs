@@ -1,6 +1,6 @@
 using System.Windows.Input;
 
-namespace WpfApp1.ViewModel.Commands;
+namespace ClientWithWpf.ViewModel.Commands;
 
 public class Command : ICommand
 {
