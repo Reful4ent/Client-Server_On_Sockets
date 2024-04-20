@@ -30,8 +30,8 @@
                     <RowDefinition Height="20px"></RowDefinition>
                     <RowDefinition ></RowDefinition>
                 </Grid.RowDefinitions>
-                <ComboBox Grid.Row="0" SelectedIndex="{Binding IndexDrive}" ItemsSource="{Binding Drives}"></ComboBox>
-                <ListBox Grid.Row="1" ItemsSource="{Binding DirectoryInfo}" SelectedIndex="{Binding IndexPath}">
+                <ComboBox Grid.Row="0" x:Name="DrivesComboBox" SelectedIndex="{Binding IndexDrive}" ItemsSource="{Binding Drives}"></ComboBox>
+                <ListBox Grid.Row="1" x:Name="DirectoryInfoComboBox" ItemsSource="{Binding DirectoryInfo}" SelectedIndex="{Binding IndexPath}">
                     
                     <b:Interaction.Triggers>
                         <b:EventTrigger EventName="MouseDoubleClick">
@@ -97,7 +97,7 @@
             </Grid.RowDefinitions>
             <Label Grid.Row="0">Клиентская сторона</Label>
             <ScrollViewer Grid.Row="1">
-                <TextBlock Text="{Binding ClientText}" TextWrapping="Wrap" ></TextBlock>
+                <TextBlock x:Name="ClientWindowText" Text="{Binding ClientText}" TextWrapping="Wrap" ></TextBlock>
             </ScrollViewer>
         </Grid>
         <Grid Grid.Column="2">

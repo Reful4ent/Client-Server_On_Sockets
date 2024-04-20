@@ -16,8 +16,14 @@ public class ServerSocket
     private IPEndPoint endPoint;
     private Socket tcpSocketServer;
     private bool isWork = true;
+
+    private bool isDirectoryInfo = false;
+    private List<string> dirsAndFiles;
+    private List<string> drives;
     
     public Func<string, string>? ServerMessage;
+    public Action<List<string>>? DriversMessage;
+    public Action<List<string>>? DirectoryMessage;
     
     
     
@@ -58,6 +64,7 @@ public class ServerSocket
                         listener = await tcpSocketServer.AcceptAsync();
                         ServerMessage?.Invoke($"Клиент присоединился {DateTime.Now} \n c адреса: {listener.RemoteEndPoint}\n");
                         await listener.SendAsync(Encoding.UTF8.GetBytes(ShowDriversInfo()));
+                        DriversMessage?.Invoke(drives);
                     }
                     catch (Exception e)
                     {
@@ -86,6 +93,11 @@ public class ServerSocket
                 {
                     ServerMessage?.Invoke($"Сервер получил {DateTime.Now} \n {data.ToString()}\n");
                     await listener.SendAsync(Encoding.UTF8.GetBytes(ResponseRequest(data)));
+                    if (isDirectoryInfo)
+                    {
+                        DirectoryMessage?.Invoke(dirsAndFiles);
+                        isDirectoryInfo = false;
+                    }
                 }
                 
                 
@@ -137,13 +149,20 @@ public class ServerSocket
         {
             DirectoryInfo[] dirs = directory.GetDirectories();
             FileInfo[] files = directory.GetFiles();
-            
+            dirsAndFiles = new List<string>();
             foreach (DirectoryInfo item in dirs)
+            {
                 response += "\n" + item.FullName;
-
-            foreach (FileInfo item in files)
-                response += "\n" + item.FullName;
+                dirsAndFiles.Add(item.FullName);
+            }
             
+            foreach (FileInfo item in files)
+            {
+                response += "\n" + item.FullName;
+                dirsAndFiles.Add(item.FullName);
+            }
+
+            isDirectoryInfo = true;
             return response + "\n";
         }
         return "Полученноe сообщение не является директорией или файлом";
@@ -159,13 +178,16 @@ public class ServerSocket
     {
         DriveInfo[] allDrives = DriveInfo.GetDrives();
         string driversInfo = string.Empty;
+        drives = new List<string>();
         
         if (allDrives == null || allDrives.Length == 0)
             return "Логические устройства отсутствуют";
-        
+
         foreach (DriveInfo drive in allDrives)
+        {
             driversInfo += "\n" + drive.Name + "\n";
-        
+            drives.Add(drive.Name);
+        }
         return driversInfo;
     }
     

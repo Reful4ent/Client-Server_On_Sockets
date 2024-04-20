@@ -89,6 +89,7 @@ public class ClientSocket
     /// </summary>
     /// <param name="message"></param>
     public async Task SendMessageAsync(string message)
+    
     {
         try
         {
