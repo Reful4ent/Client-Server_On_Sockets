@@ -118,7 +118,6 @@ public class MainVM : BaseVM
          if (IndexDrive == -1)
          {
             IndexDrive = prevIndex;
-            Console.WriteLine("iNDEX1 " + IndexDrive);
             return;
          }
 
@@ -209,7 +208,6 @@ public class MainVM : BaseVM
       {
          if (value == ".")
          {
-            Console.WriteLine("currentDrive" + currentDrive);
             Set(ref fullPath, currentDrive);
             return;
          }
